@@ -49,7 +49,7 @@ export function Trending() {
     useEffect(() => {
         const fetchTrending = async () => {
             try {
-                const response = await fetch('http://localhost:3001/api/trending/all/week')
+                const response = await fetch('http://localhost:3001/api/trending')
                 if (!response.ok) {
                     throw new Error('Oopsie ? unable to fetch Trending Media')
                 }
@@ -440,7 +440,7 @@ export function PopularTV() {
 export default function HomePage() {
     return (
         <div className="min-h-screen bg-gray-900">
-            
+            <Trending />
             <TopRatedMovies />
             <TopRatedTV />
             <PopularMovies />
