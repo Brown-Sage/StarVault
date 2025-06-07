@@ -40,30 +40,51 @@ const useResponsiveItemCount = () => {
 
     return itemCount;
 };
+
+// Utility function for fetching data with retry
+async function fetchWithRetry<T>(url: string, retries = 3, delay = 1000): Promise<T> {
+    for (let i = 0; i < retries; i++) {
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return await response.json();
+        } catch (error) {
+            if (i === retries - 1) throw error;
+            await new Promise(resolve => setTimeout(resolve, delay * (i + 1)));
+        }
+    }
+    throw new Error('Failed to fetch data after retries');
+}
+
 export function Trending() {
-    const [trending, setTrending] = useState<Tmdb_info[]>([])
-    const [loading, setLoading] = useState(true)
-    const [error, setError] = useState<string | null>(null)
+    const [trending, setTrending] = useState<Tmdb_info[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [retryCount, setRetryCount] = useState(0);
 
     const itemToShow = useResponsiveItemCount();
+
     useEffect(() => {
         const fetchTrending = async () => {
             try {
-                const response = await fetch('http://localhost:3001/api/trending')
-                if (!response.ok) {
-                    throw new Error('Oopsie ? unable to fetch Trending Media')
-                }
-                const data = await response.json();
+                setLoading(true);
+                setError(null);
+                const data = await fetchWithRetry<Tmdb_info[]>('http://localhost:3001/api/trending');
                 setTrending(data);
+                setRetryCount(0);
             } catch (err) {
-                setError(err instanceof Error ? err.message : 'An error occurred')
+                setError(err instanceof Error ? err.message : 'An error occurred');
+                setRetryCount(prev => prev + 1);
             } finally {
-                setLoading(false)
+                setLoading(false);
             }
         };
 
-        fetchTrending()
-    }, [])
+        fetchTrending();
+    }, [retryCount]);
+
     if (loading) {
         return (
             <div className="container mx-auto px-4 py-8">
@@ -100,12 +121,14 @@ export function Trending() {
                         />
                         <div className="p-4">
                             <div className="flex justify-between items-center mb-2">
-                                <h3 className="text-xl font-semibold text-white">{item.title}</h3>
-                                <span className="text-yellow-400">★ {item.rating.toFixed(1)}</span>
+                                <h3 className="text-xl font-semibold text-white">{item.title}</h3> 
                             </div>
+                            <div className="flex justify-between items-center mb-2">
                             <span className="inline-block apx-2 py-1 text-sm rounded-sm p-1 bg-blue-600 text-white">
                                 {item.type}
                             </span>
+                            <span className="text-yellow-400">★ {item.rating.toFixed(1)}</span>
+                            </div>
                             <p className="mt-2 text-gray-300 text-sm line-clamp-2">{item.overview}</p>
                             <p className="mt-2 text-gray-400 text-sm">{item.releaseDate}</p>
                         </div>
@@ -122,27 +145,28 @@ export function TopRatedMovies() {
     const [topRatedMovies, setTopRatedMovies] = useState<Tmdb_info[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [retryCount, setRetryCount] = useState(0);
 
     const itemToShow = useResponsiveItemCount();
 
     useEffect(() => {
         const fetchTopRatedMovies = async () => {
             try {
-                const response = await fetch('http://localhost:3001/api/top-rated/movies');
-                if (!response.ok) {
-                    throw new Error('Oopsie ! unable to fetch Top-rated Movies');
-                }
-                const data = await response.json();
+                setLoading(true);
+                setError(null);
+                const data = await fetchWithRetry<Tmdb_info[]>('http://localhost:3001/api/top-rated/movies');
                 setTopRatedMovies(data);
+                setRetryCount(0);
             } catch (err) {
                 setError(err instanceof Error ? err.message : 'An error occurred');
+                setRetryCount(prev => prev + 1);
             } finally {
                 setLoading(false);
             }
         };
 
         fetchTopRatedMovies();
-    }, []);
+    }, [retryCount]);
 
     if (loading) {
         return (
@@ -180,12 +204,14 @@ export function TopRatedMovies() {
                         />
                         <div className="p-4">
                             <div className="flex justify-between items-center mb-2">
-                                <h3 className="text-xl font-semibold text-white">{item.title}</h3>
-                                <span className="text-yellow-400">★ {item.rating.toFixed(1)}</span>
+                                <h3 className="text-xl font-semibold text-white">{item.title}</h3> 
                             </div>
+                            <div className="flex justify-between items-center mb-2">
                             <span className="inline-block apx-2 py-1 text-sm rounded-sm p-1 bg-blue-600 text-white">
                                 {item.type}
                             </span>
+                            <span className="text-yellow-400">★ {item.rating.toFixed(1)}</span>
+                            </div>
                             <p className="mt-2 text-gray-300 text-sm line-clamp-2">{item.overview}</p>
                             <p className="mt-2 text-gray-400 text-sm">{item.releaseDate}</p>
                         </div>
@@ -202,27 +228,28 @@ export function TopRatedTV() {
     const [topRatedTV, setTopRatedTV] = useState<Tmdb_info[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [retryCount, setRetryCount] = useState(0);
 
     const itemToShow = useResponsiveItemCount();
 
     useEffect(() => {
         const fetchTopRatedTV = async () => {
             try {
-                const response = await fetch('http://localhost:3001/api/top-rated/tv');
-                if (!response.ok) {
-                    throw new Error('Oopsie ! unable to fetch Top-Rated TV shows');
-                }
-                const data = await response.json();
+                setLoading(true);
+                setError(null);
+                const data = await fetchWithRetry<Tmdb_info[]>('http://localhost:3001/api/top-rated/tv');
                 setTopRatedTV(data);
+                setRetryCount(0);
             } catch (err) {
                 setError(err instanceof Error ? err.message : 'An error occurred');
+                setRetryCount(prev => prev + 1);
             } finally {
                 setLoading(false);
             }
         };
 
         fetchTopRatedTV();
-    }, []);
+    }, [retryCount]);
 
     if (loading) {
         return (
@@ -260,12 +287,14 @@ export function TopRatedTV() {
                         />
                         <div className="p-4">
                             <div className="flex justify-between items-center mb-2">
-                                <h3 className="text-xl font-semibold text-white">{item.title}</h3>
-                                <span className="text-yellow-400">★ {item.rating.toFixed(1)}</span>
+                                <h3 className="text-xl font-semibold text-white">{item.title}</h3> 
                             </div>
+                            <div className="flex justify-between items-center mb-2">
                             <span className="inline-block apx-2 py-1 text-sm rounded-sm p-1 bg-blue-600 text-white">
                                 {item.type}
                             </span>
+                            <span className="text-yellow-400">★ {item.rating.toFixed(1)}</span>
+                            </div>
                             <p className="mt-2 text-gray-300 text-sm line-clamp-2">{item.overview}</p>
                             <p className="mt-2 text-gray-400 text-sm">{item.releaseDate}</p>
                         </div>
@@ -282,27 +311,28 @@ export function PopularMovies() {
     const [popularMovies, setPopularMovies] = useState<Tmdb_info[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [retryCount, setRetryCount] = useState(0);
 
     const itemToShow = useResponsiveItemCount();
 
     useEffect(() => {
         const fetchPopularMovies = async () => {
             try {
-                const response = await fetch('http://localhost:3001/api/popular/movies');
-                if (!response.ok) {
-                    throw new Error('Oopsie ! unable to fetch the Popular Movies');
-                }
-                const data = await response.json();
+                setLoading(true);
+                setError(null);
+                const data = await fetchWithRetry<Tmdb_info[]>('http://localhost:3001/api/popular/movies');
                 setPopularMovies(data);
+                setRetryCount(0);
             } catch (err) {
                 setError(err instanceof Error ? err.message : 'An error occurred');
+                setRetryCount(prev => prev + 1);
             } finally {
                 setLoading(false);
             }
         };
 
         fetchPopularMovies();
-    }, []);
+    }, [retryCount]);
 
     if (loading) {
         return (
@@ -340,12 +370,14 @@ export function PopularMovies() {
                         />
                         <div className="p-4">
                             <div className="flex justify-between items-center mb-2">
-                                <h3 className="text-xl font-semibold text-white">{item.title}</h3>
-                                <span className="text-yellow-400">★ {item.rating.toFixed(1)}</span>
+                                <h3 className="text-xl font-semibold text-white">{item.title}</h3> 
                             </div>
+                            <div className="flex justify-between items-center mb-2">
                             <span className="inline-block apx-2 py-1 text-sm rounded-sm p-1 bg-blue-600 text-white">
                                 {item.type}
                             </span>
+                            <span className="text-yellow-400">★ {item.rating.toFixed(1)}</span>
+                            </div>
                             <p className="mt-2 text-gray-300 text-sm line-clamp-2">{item.overview}</p>
                             <p className="mt-2 text-gray-400 text-sm">{item.releaseDate}</p>
                         </div>
@@ -362,27 +394,28 @@ export function PopularTV() {
     const [popularTV, setPopularTV] = useState<Tmdb_info[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [retryCount, setRetryCount] = useState(0);
 
     const itemToShow = useResponsiveItemCount();
 
     useEffect(() => {
         const fetchPopularTV = async () => {
             try {
-                const response = await fetch('http://localhost:3001/api/popular/tv');
-                if (!response.ok) {
-                    throw new Error('Oopsie ! unable to fetch the Popular TV show');
-                }
-                const data = await response.json();
+                setLoading(true);
+                setError(null);
+                const data = await fetchWithRetry<Tmdb_info[]>('http://localhost:3001/api/popular/tv');
                 setPopularTV(data);
+                setRetryCount(0);
             } catch (err) {
                 setError(err instanceof Error ? err.message : 'An error occurred');
+                setRetryCount(prev => prev + 1);
             } finally {
                 setLoading(false);
             }
         };
 
         fetchPopularTV();
-    }, []);
+    }, [retryCount]);
 
     if (loading) {
         return (
@@ -420,12 +453,14 @@ export function PopularTV() {
                         />
                         <div className="p-4">
                             <div className="flex justify-between items-center mb-2">
-                                <h3 className="text-xl font-semibold text-white">{item.title}</h3>
-                                <span className="text-yellow-400">★ {item.rating.toFixed(1)}</span>
+                                <h3 className="text-xl font-semibold text-white">{item.title}</h3> 
                             </div>
+                            <div className="flex justify-between items-center mb-2">
                             <span className="inline-block apx-2 py-1 text-sm rounded-sm p-1 bg-blue-600 text-white">
                                 {item.type}
                             </span>
+                            <span className="text-yellow-400">★ {item.rating.toFixed(1)}</span>
+                            </div>
                             <p className="mt-2 text-gray-300 text-sm line-clamp-2">{item.overview}</p>
                             <p className="mt-2 text-gray-400 text-sm">{item.releaseDate}</p>
                         </div>

@@ -16,6 +16,30 @@ app.use(express.json());
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
 
+// Cache configuration
+interface CacheItem {
+  data: any;
+  timestamp: number;
+}
+
+const cache: { [key: string]: CacheItem } = {};
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes 
+
+function getCachedData(key: string) {
+  const item = cache[key];
+  if (item && Date.now() - item.timestamp < CACHE_DURATION) {
+    return item.data;
+  }
+  return null;
+}
+
+function setCachedData(key: string, data: any) {
+  cache[key] = {
+    data,
+    timestamp: Date.now()
+  };
+}
+
 // Types
 interface TMDBResponse {
   results: Array<{
@@ -34,6 +58,14 @@ interface TMDBResponse {
 // Routes
 app.get('/api/trending', async (req, res) => {
   try {
+    const cacheKey = 'trending';
+    const cachedData = getCachedData(cacheKey);
+    
+    if (cachedData) {
+      console.log('Serving trending data from cache');
+      return res.json(cachedData);
+    }
+
     if (!process.env.TMDB_API_KEY) {
       throw new Error('TMDB API key is not set in environment variables');
     }
@@ -59,6 +91,7 @@ app.get('/api/trending', async (req, res) => {
       releaseDate: item.release_date || item.first_air_date
     }));
 
+    setCachedData(cacheKey, trendingItems);
     res.json(trendingItems);
   } catch (error) {
     console.error('Error details:', error);
@@ -75,6 +108,14 @@ app.get('/api/trending', async (req, res) => {
 // Top Rated Movies
 app.get('/api/top-rated/movies', async (req, res) => {
   try {
+    const cacheKey = 'top-rated-movies';
+    const cachedData = getCachedData(cacheKey);
+    
+    if (cachedData) {
+      console.log('Serving top-rated movies from cache');
+      return res.json(cachedData);
+    }
+
     if (!process.env.TMDB_API_KEY) {
       throw new Error('TMDB API key is not set in environment variables');
     }
@@ -100,6 +141,7 @@ app.get('/api/top-rated/movies', async (req, res) => {
       releaseDate: item.release_date
     }));
 
+    setCachedData(cacheKey, topRatedMovies);
     res.json(topRatedMovies);
   } catch (error) {
     console.error('Error details:', error);
