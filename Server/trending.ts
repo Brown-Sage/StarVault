@@ -55,6 +55,30 @@ interface TMDBResponse {
   }>;
 }
 
+// Helper function to format TMDB response
+function formatTMDBResponse(details: any, type: 'movie' | 'tv') {
+  return {
+    id: details.id,
+    title: type === 'movie' ? details.title : details.name,
+    type,
+    rating: details.vote_average,
+    imageUrl: details.poster_path ? `${TMDB_IMAGE_BASE_URL}${details.poster_path}` : null,
+    overview: details.overview,
+    releaseDate: type === 'movie' ? details.release_date : details.first_air_date,
+    genres: details.genres?.map((genre: { name: string }) => genre.name),
+    runtime: type === 'movie' ? details.runtime : details.episode_run_time?.[0],
+    status: details.status,
+    tagline: details.tagline,
+    ...(type === 'movie' ? {
+      budget: details.budget,
+      revenue: details.revenue
+    } : {
+      numberOfSeasons: details.number_of_seasons,
+      numberOfEpisodes: details.number_of_episodes
+    })
+  };
+}
+
 // Routes
 app.get('/api/trending', async (req, res) => {
   try {
@@ -263,6 +287,112 @@ app.get('/api/popular/tv', async (req, res) => {
     console.error('Error details:', error);
     res.status(500).json({
       error: 'Failed to fetch popular TV shows',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
+
+// Get Movie Details
+app.get('/api/movie/:id', async (req, res) => {
+  try {
+    if (!process.env.TMDB_API_KEY) {
+      throw new Error('TMDB API key is not set in environment variables');
+    }
+
+    const { id } = req.params;
+    // Fetch movie details, credits, and videos
+    const [detailsRes, creditsRes, videosRes] = await Promise.all([
+      axios.get(`${TMDB_BASE_URL}/movie/${id}`, {
+        params: {
+          api_key: process.env.TMDB_API_KEY,
+          language: 'en-US'
+        }
+      }),
+      axios.get(`${TMDB_BASE_URL}/movie/${id}/credits`, {
+        params: {
+          api_key: process.env.TMDB_API_KEY,
+          language: 'en-US'
+        }
+      }),
+      axios.get(`${TMDB_BASE_URL}/movie/${id}/videos`, {
+        params: {
+          api_key: process.env.TMDB_API_KEY,
+          language: 'en-US'
+        }
+      })
+    ]);
+
+    const details = formatTMDBResponse(detailsRes.data, 'movie');
+    const cast = creditsRes.data.cast.slice(0, 10).map((member: any) => ({
+      id: member.id,
+      name: member.name,
+      character: member.character,
+      profileUrl: member.profile_path ? `${TMDB_IMAGE_BASE_URL}${member.profile_path}` : null
+    }));
+    // Crew extraction
+    const directors = creditsRes.data.crew.filter((c: any) => c.job === 'Director').map((c: any) => c.name);
+    const writers = creditsRes.data.crew.filter((c: any) => c.job === 'Writer' || c.job === 'Screenplay' || c.job === 'Story').map((c: any) => c.name);
+    // Trailer extraction (YouTube only)
+    const trailer = videosRes.data.results.find((v: any) => v.type === 'Trailer' && v.site === 'YouTube');
+    const trailerKey = trailer ? trailer.key : null;
+    res.json({ ...details, cast, crew: { directors, writers }, trailerKey });
+  } catch (error) {
+    console.error('Error fetching movie details:', error);
+    res.status(500).json({
+      error: 'Failed to fetch movie details',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
+
+// Get TV Show Details
+app.get('/api/tv/:id', async (req, res) => {
+  try {
+    if (!process.env.TMDB_API_KEY) {
+      throw new Error('TMDB API key is not set in environment variables');
+    }
+
+    const { id } = req.params;
+    // Fetch TV show details, credits, and videos
+    const [detailsRes, creditsRes, videosRes] = await Promise.all([
+      axios.get(`${TMDB_BASE_URL}/tv/${id}`, {
+        params: {
+          api_key: process.env.TMDB_API_KEY,
+          language: 'en-US'
+        }
+      }),
+      axios.get(`${TMDB_BASE_URL}/tv/${id}/credits`, {
+        params: {
+          api_key: process.env.TMDB_API_KEY,
+          language: 'en-US'
+        }
+      }),
+      axios.get(`${TMDB_BASE_URL}/tv/${id}/videos`, {
+        params: {
+          api_key: process.env.TMDB_API_KEY,
+          language: 'en-US'
+        }
+      })
+    ]);
+
+    const details = formatTMDBResponse(detailsRes.data, 'tv');
+    const cast = creditsRes.data.cast.slice(0, 10).map((member: any) => ({
+      id: member.id,
+      name: member.name,
+      character: member.character,
+      profileUrl: member.profile_path ? `${TMDB_IMAGE_BASE_URL}${member.profile_path}` : null
+    }));
+    // Crew extraction
+    const directors = creditsRes.data.crew.filter((c: any) => c.job === 'Director').map((c: any) => c.name);
+    const writers = creditsRes.data.crew.filter((c: any) => c.job === 'Writer' || c.job === 'Screenplay' || c.job === 'Story').map((c: any) => c.name);
+    // Trailer extraction (YouTube only)
+    const trailer = videosRes.data.results.find((v: any) => v.type === 'Trailer' && v.site === 'YouTube');
+    const trailerKey = trailer ? trailer.key : null;
+    res.json({ ...details, cast, crew: { directors, writers }, trailerKey });
+  } catch (error) {
+    console.error('Error fetching TV show details:', error);
+    res.status(500).json({
+      error: 'Failed to fetch TV show details',
       details: error instanceof Error ? error.message : 'Unknown error'
     });
   }

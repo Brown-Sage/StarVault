@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { useEffect, useState } from 'react';
 import { FcNext } from "react-icons/fc";
 
@@ -13,11 +14,10 @@ interface Tmdb_info {
 
 const useResponsiveItemCount = () => {
     const [itemCount, setItemCount] = useState(6);
-
+    
     useEffect(() => {
         const calculateItemCount = () => {
             const width = window.innerWidth;
-
             if (width < 640) { // sm
                 return 1;
             } else if (width < 768) { // md
@@ -42,7 +42,7 @@ const useResponsiveItemCount = () => {
 };
 
 // Utility function for fetching data with retry
-async function fetchWithRetry<T>(url: string, retries = 3, delay = 1000): Promise<T> {
+export async function fetchWithRetry<T>(url: string, retries = 3, delay = 1000): Promise<T> {
     for (let i = 0; i < retries; i++) {
         try {
             const response = await fetch(url);
@@ -56,6 +56,14 @@ async function fetchWithRetry<T>(url: string, retries = 3, delay = 1000): Promis
         }
     }
     throw new Error('Failed to fetch data after retries');
+}
+
+// Helper function to create URL-friendly slug
+function createSlug(title: string): string {
+    return title
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)/g, '');
 }
 
 export function Trending() {
@@ -121,13 +129,18 @@ export function Trending() {
                         />
                         <div className="p-4">
                             <div className="flex justify-between items-center mb-2">
-                                <h3 className="text-xl font-semibold text-white">{item.title}</h3> 
+                                <Link 
+                                    to={`/${item.type}/${item.id}-${createSlug(item.title)}`}
+                                    className="text-xl font-semibold text-white hover:text-blue-400 transition-colors"
+                                >
+                                    {item.title}
+                                </Link>
                             </div>
                             <div className="flex justify-between items-center mb-2">
-                            <span className="inline-block apx-2 py-1 text-sm rounded-sm p-1 bg-blue-600 text-white">
-                                {item.type}
-                            </span>
-                            <span className="text-yellow-400">★ {item.rating.toFixed(1)}</span>
+                                <span className="inline-block apx-2 py-1 text-sm rounded-sm p-1 bg-blue-600 text-white">
+                                    {item.type}
+                                </span>
+                                <span className="text-yellow-400">★ {item.rating.toFixed(1)}</span>
                             </div>
                             <p className="mt-2 text-gray-300 text-sm line-clamp-2">{item.overview}</p>
                             <p className="mt-2 text-gray-400 text-sm">{item.releaseDate}</p>
@@ -204,7 +217,12 @@ export function TopRatedMovies() {
                         />
                         <div className="p-4">
                             <div className="flex justify-between items-center mb-2">
-                                <h3 className="text-xl font-semibold text-white">{item.title}</h3> 
+                                <Link 
+                                    to={`/${item.type}/${item.id}-${createSlug(item.title)}`}
+                                    className="text-xl font-semibold text-white hover:text-blue-400 transition-colors"
+                                >
+                                    {item.title}
+                                </Link>
                             </div>
                             <div className="flex justify-between items-center mb-2">
                             <span className="inline-block apx-2 py-1 text-sm rounded-sm p-1 bg-blue-600 text-white">
@@ -287,7 +305,12 @@ export function TopRatedTV() {
                         />
                         <div className="p-4">
                             <div className="flex justify-between items-center mb-2">
-                                <h3 className="text-xl font-semibold text-white">{item.title}</h3> 
+                                <Link 
+                                    to={`/${item.type}/${item.id}-${createSlug(item.title)}`}
+                                    className="text-xl font-semibold text-white hover:text-blue-400 transition-colors"
+                                >
+                                    {item.title}
+                                </Link>
                             </div>
                             <div className="flex justify-between items-center mb-2">
                             <span className="inline-block apx-2 py-1 text-sm rounded-sm p-1 bg-blue-600 text-white">
@@ -370,7 +393,12 @@ export function PopularMovies() {
                         />
                         <div className="p-4">
                             <div className="flex justify-between items-center mb-2">
-                                <h3 className="text-xl font-semibold text-white">{item.title}</h3> 
+                                <Link 
+                                    to={`/${item.type}/${item.id}-${createSlug(item.title)}`}
+                                    className="text-xl font-semibold text-white hover:text-blue-400 transition-colors"
+                                >
+                                    {item.title}
+                                </Link>
                             </div>
                             <div className="flex justify-between items-center mb-2">
                             <span className="inline-block apx-2 py-1 text-sm rounded-sm p-1 bg-blue-600 text-white">
@@ -453,7 +481,12 @@ export function PopularTV() {
                         />
                         <div className="p-4">
                             <div className="flex justify-between items-center mb-2">
-                                <h3 className="text-xl font-semibold text-white">{item.title}</h3> 
+                                <Link 
+                                    to={`/${item.type}/${item.id}-${createSlug(item.title)}`}
+                                    className="text-xl font-semibold text-white hover:text-blue-400 transition-colors"
+                                >
+                                    {item.title}
+                                </Link>
                             </div>
                             <div className="flex justify-between items-center mb-2">
                             <span className="inline-block apx-2 py-1 text-sm rounded-sm p-1 bg-blue-600 text-white">
