@@ -92,8 +92,9 @@ export default function MovieDetails() {
         <div className="min-h-screen bg-gray-900 text-white">
             {/* Trailer Modal */}
             {showTrailer && movie.trailerKey && (
-                <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-90 z-50 flex flex-col items-center">
-                    <div className="w-full flex justify-end pt-6 pr-8">
+                <div className="fixed inset-0 z-50 flex flex-col items-center justify-start">
+                    <div className="absolute inset-0 bg-opacity-70 backdrop-blur-sm"></div>
+                    <div className="relative w-full flex justify-end pt-6 pr-8 z-10">
                         <button
                             className="text-white text-4xl font-bold hover:text-red-400 transition-colors"
                             onClick={() => setShowTrailer(false)}
@@ -102,7 +103,7 @@ export default function MovieDetails() {
                             &times;
                         </button>
                     </div>
-                    <div className="w-full flex justify-center mt-2">
+                    <div className="relative w-full flex justify-center mt-2 z-10">
                         <div className="w-full max-w-3xl aspect-video">
                             <iframe
                                 className="w-full h-full rounded-xl"
@@ -173,7 +174,7 @@ export default function MovieDetails() {
                                     </span>
                                 </div>
                                 <span className="text-sm text-gray-300 font-semibold">User Score</span>
-                                <span className="ml-2 text-2xl">🥳😲😶</span>          will add functionality later 
+                                <span className="ml-2 text-2xl">🥳😲😶</span>           
                             </div>
                             {/* Play Trailer Button */}
                             {movie.trailerKey && (
