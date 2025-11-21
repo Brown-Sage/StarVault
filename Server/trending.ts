@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import axios from 'axios';
+import searchRouter from './search';
 
 dotenv.config();
 
@@ -11,6 +12,7 @@ const port = process.env.PORT || 3001;
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use('/api', searchRouter);
 
 // TMDB API configuration
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
@@ -132,7 +134,7 @@ app.get('/api/trending', async (req, res) => {
 // Top Rated Movies
 app.get('/api/top-rated/movies', async (req, res) => {
   try {
-    const cacheKey = 'top-rated-movies';
+    const cacheKey = 'top-rated-movies';8
     const cachedData = getCachedData(cacheKey);
     
     if (cachedData) {
@@ -397,6 +399,8 @@ app.get('/api/tv/:id', async (req, res) => {
     });
   }
 });
+
+
 
 // Add a test route
 app.get('/api/test', (req, res) => {

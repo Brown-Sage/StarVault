@@ -219,7 +219,7 @@ export default function MovieDetails() {
             {/* Cast Section */}
             {movie.cast && movie.cast.length > 0 && (
                 <div className="container mx-auto px-4 py-8">
-                    <h2 className="text-2xl font-bold mb-4 text-black dark:text-white">Top Billed Cast</h2>
+                    <h2 className="text-2xl font-bold mb-4 text-white">Top Billed Cast</h2>
                     <div className="flex overflow-x-auto gap-4 pb-2">
                         {movie.cast.map((artist) => (
                             <div
