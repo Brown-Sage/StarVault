@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
-import { useEffect, useState } from 'react';
-import { FcNext } from "react-icons/fc";
+import { useEffect, useState, useRef } from 'react';
+import { ChevronLeft, ChevronRight, Star, Play } from 'lucide-react';
 
 interface Tmdb_info {
     id: number;
@@ -14,18 +14,20 @@ interface Tmdb_info {
 
 const useResponsiveItemCount = () => {
     const [itemCount, setItemCount] = useState(6);
-    
+
     useEffect(() => {
         const calculateItemCount = () => {
             const width = window.innerWidth;
             if (width < 640) { // sm
-                return 1;
+                return 2;
             } else if (width < 768) { // md
                 return 3;
             } else if (width < 1024) { // lg
                 return 4;
+            } else if (width < 1280) { // xl
+                return 5;
             } else {
-                return 6; // xl and above
+                return 6; // 2xl and above
             }
         };
 
@@ -66,13 +68,264 @@ function createSlug(title: string): string {
         .replace(/(^-|-$)/g, '');
 }
 
+// Skeleton Loader Component
+function SkeletonCard() {
+    return (
+        <div className="flex-shrink-0 w-[180px] sm:w-[200px] lg:w-[220px]">
+            <div className="relative group">
+                <div className="aspect-[2/3] bg-gradient-to-br from-gray-700 to-gray-800 rounded-xl animate-pulse"></div>
+                <div className="mt-3 space-y-2">
+                    <div className="h-4 bg-gray-700 rounded animate-pulse w-3/4"></div>
+                    <div className="h-3 bg-gray-700 rounded animate-pulse w-1/2"></div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// Content Row Component with Horizontal Scroll
+interface ContentRowProps {
+    title: string;
+    categorySlug: string;
+    items: Tmdb_info[];
+    loading: boolean;
+    error: string | null;
+}
+
+function ContentRow({ title, categorySlug, items, loading, error }: ContentRowProps) {
+    const scrollContainerRef = useRef<HTMLDivElement>(null);
+    const [canScrollLeft, setCanScrollLeft] = useState(false);
+    const [canScrollRight, setCanScrollRight] = useState(true);
+
+    const checkScroll = () => {
+        if (scrollContainerRef.current) {
+            const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
+            setCanScrollLeft(scrollLeft > 0);
+            setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
+        }
+    };
+
+    useEffect(() => {
+        checkScroll();
+        const container = scrollContainerRef.current;
+        if (container) {
+            container.addEventListener('scroll', checkScroll);
+            return () => container.removeEventListener('scroll', checkScroll);
+        }
+    }, [items]);
+
+    const scroll = (direction: 'left' | 'right') => {
+        if (scrollContainerRef.current) {
+            const scrollAmount = 400;
+            const newScrollLeft = direction === 'left'
+                ? scrollContainerRef.current.scrollLeft - scrollAmount
+                : scrollContainerRef.current.scrollLeft + scrollAmount;
+
+            scrollContainerRef.current.scrollTo({
+                left: newScrollLeft,
+                behavior: 'smooth'
+            });
+        }
+    };
+
+    if (loading) {
+        return (
+            <div className="mb-12">
+                <h2 className="text-2xl md:text-3xl font-bold text-white mb-6 px-4 md:px-8">
+                    {title}
+                </h2>
+                <div className="relative px-4 md:px-8">
+                    <div className="flex gap-4 overflow-hidden">
+                        {[...Array(6)].map((_, i) => <SkeletonCard key={i} />)}
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="mb-12 px-4 md:px-8">
+                <h2 className="text-2xl md:text-3xl font-bold text-white mb-6">{title}</h2>
+                <div className="bg-red-500/10 border border-red-500/50 rounded-xl p-6 text-red-400">
+                    Error loading content: {error}
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="mb-12 group/section">
+            <div className="flex items-center justify-between mb-6 px-4 md:px-8">
+                <h2 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+                    {title}
+                </h2>
+                <Link
+                    to={`/browse/${title.toLowerCase().replace(/\s+/g, '-')}`}
+                    className="text-sm text-purple-400 hover:text-purple-300 transition-colors flex items-center gap-1 group/link"
+                >
+                    See All
+                    <ChevronRight className="w-4 h-4 group-hover/link:translate-x-1 transition-transform" />
+                </Link>
+            </div>
+
+            <div className="relative group/scroll">
+                {/* Left Arrow */}
+                {canScrollLeft && (
+                    <button
+                        onClick={() => scroll('left')}
+                        className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-black/80 hover:bg-black/90 text-white p-3 rounded-full opacity-0 group-hover/scroll:opacity-100 transition-all duration-300 backdrop-blur-sm border border-white/10 hover:scale-110"
+                        aria-label="Scroll left"
+                    >
+                        <ChevronLeft className="w-6 h-6" />
+                    </button>
+                )}
+
+                {/* Scrollable Content */}
+                <div
+                    ref={scrollContainerRef}
+                    className="flex gap-4 overflow-x-auto scrollbar-hide px-4 md:px-8 scroll-smooth"
+                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                >
+                    {items.map((item) => (
+                        <MovieCard key={item.id} item={item} />
+                    ))}
+                </div>
+
+                {/* Right Arrow */}
+                {canScrollRight && (
+                    <button
+                        onClick={() => scroll('right')}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-black/80 hover:bg-black/90 text-white p-3 rounded-full opacity-0 group-hover/scroll:opacity-100 transition-all duration-300 backdrop-blur-sm border border-white/10 hover:scale-110"
+                        aria-label="Scroll right"
+                    >
+                        <ChevronRight className="w-6 h-6" />
+                    </button>
+                )}
+            </div>
+        </div>
+    );
+}
+
+// Movie Card Component
+function MovieCard({ item }: { item: Tmdb_info }) {
+    return (
+        <div className="flex-shrink-0 w-[180px] sm:w-[200px] lg:w-[220px]">
+            <Link to={`/${item.type}/${item.id}-${createSlug(item.title)}`}>
+                <div className="relative group cursor-pointer">
+                    {/* Poster Image */}
+                    <div className="relative aspect-[2/3] rounded-xl overflow-hidden bg-gray-800">
+                        <img
+                            src={item.imageUrl}
+                            alt={item.title}
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                            loading="lazy"
+                        />
+
+                        {/* Gradient Overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+                        {/* Play Button on Hover */}
+                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
+                            <div className="bg-purple-600 hover:bg-purple-500 rounded-full p-4 transform scale-75 group-hover:scale-100 transition-transform duration-300 shadow-2xl">
+                                <Play className="w-6 h-6 text-white fill-white" />
+                            </div>
+                        </div>
+
+                        {/* Rating Badge */}
+                        <div className="absolute top-2 right-2 bg-black/80 backdrop-blur-sm px-2 py-1 rounded-lg flex items-center gap-1 border border-yellow-500/30">
+                            <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
+                            <span className="text-xs font-bold text-white">{item.rating.toFixed(1)}</span>
+                        </div>
+
+                        {/* Type Badge */}
+                        <div className="absolute top-2 left-2 bg-purple-600/90 backdrop-blur-sm px-2 py-1 rounded-md">
+                            <span className="text-xs font-semibold text-white uppercase tracking-wide">
+                                {item.type}
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* Title and Info */}
+                    <div className="mt-3">
+                        <h3 className="text-white font-semibold text-sm line-clamp-2 group-hover:text-purple-400 transition-colors">
+                            {item.title}
+                        </h3>
+                        <p className="text-gray-400 text-xs mt-1">
+                            {item.releaseDate ? new Date(item.releaseDate).getFullYear() : 'N/A'}
+                        </p>
+                    </div>
+                </div>
+            </Link>
+        </div>
+    );
+}
+
+// Hero Section Component
+function HeroSection({ featured }: { featured: Tmdb_info | null }) {
+    if (!featured) return null;
+
+    return (
+        <div className="relative h-[70vh] min-h-[500px] mb-12 overflow-hidden">
+            {/* Background Image with Overlay */}
+            <div className="absolute inset-0">
+                <img
+                    src={featured.imageUrl}
+                    alt={featured.title}
+                    className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0a0118] via-transparent to-transparent"></div>
+            </div>
+
+            {/* Content */}
+            <div className="relative h-full flex items-center px-4 md:px-8 lg:px-16">
+                <div className="max-w-2xl space-y-6">
+                    {/* Badge */}
+                    <div className="flex items-center gap-3">
+                        <span className="bg-purple-600 text-white px-4 py-1.5 rounded-full text-sm font-semibold uppercase tracking-wide">
+                            Featured
+                        </span>
+                        <div className="flex items-center gap-2 bg-black/50 backdrop-blur-sm px-3 py-1.5 rounded-full">
+                            <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                            <span className="text-white font-bold">{featured.rating.toFixed(1)}</span>
+                        </div>
+                    </div>
+
+                    {/* Title */}
+                    <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white leading-tight">
+                        {featured.title}
+                    </h1>
+
+                    {/* Overview */}
+                    <p className="text-gray-300 text-lg md:text-xl line-clamp-3 max-w-xl">
+                        {featured.overview}
+                    </p>
+
+                    {/* Buttons */}
+                    <div className="flex flex-wrap gap-4 pt-4">
+                        <Link
+                            to={`/${featured.type}/${featured.id}-${createSlug(featured.title)}`}
+                            className="bg-purple-600 hover:bg-purple-500 text-white px-8 py-3 rounded-full font-semibold flex items-center gap-2 transition-all duration-300 hover:scale-105 shadow-lg shadow-purple-600/50"
+                        >
+                            <Play className="w-5 h-5 fill-white" />
+                            Watch Now
+                        </Link>
+                        <button className="bg-white/10 hover:bg-white/20 text-white px-8 py-3 rounded-full font-semibold backdrop-blur-sm border border-white/20 transition-all duration-300 hover:scale-105">
+                            More Info
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// Main Section Components
 export function Trending() {
     const [trending, setTrending] = useState<Tmdb_info[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [retryCount, setRetryCount] = useState(0);
-
-    const itemToShow = useResponsiveItemCount();
 
     useEffect(() => {
         const fetchTrending = async () => {
@@ -81,86 +334,28 @@ export function Trending() {
                 setError(null);
                 const data = await fetchWithRetry<Tmdb_info[]>('http://localhost:3001/api/trending');
                 setTrending(data);
-                setRetryCount(0);
             } catch (err) {
                 setError(err instanceof Error ? err.message : 'An error occurred');
-                setRetryCount(prev => prev + 1);
             } finally {
                 setLoading(false);
             }
         };
 
         fetchTrending();
-    }, [retryCount]);
-
-    if (loading) {
-        return (
-            <div className="container mx-auto px-4 py-8">
-                <div className="flex justify-center items-center h-64">
-                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-                </div>
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div className="container mx-auto px-4 py-8">
-                <div className="text-red-500 text-center">
-                    Error: {error}
-                </div>
-            </div>
-        );
-    }
+    }, []);
 
     return (
-        <div className="container mx-auto px-4 py-8">
-            <div className="text-3xl flex justify-between font-bold text-white mb-6">
-                <h1>Trending</h1>
-                <button className="text-sm border-1 p-1 rounded-xl">See More</button>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
-                {trending.slice(0, itemToShow).map((item) => (
-                    <div key={item.id} className="bgx-gray-800 rounded-lg overflow-hidden shadow-lg hover:transform hover:scale-105 transition-transform duration-200">
-                        <img 
-                            src={item.imageUrl} 
-                            alt={item.title}
-                            className="w-full h-64 object-cover"
-                        />
-                        <div className="p-4">
-                            <div className="flex justify-between items-center mb-2">
-                                <Link 
-                                    to={`/${item.type}/${item.id}-${createSlug(item.title)}`}
-                                    className="text-xl font-semibold text-white hover:text-blue-400 transition-colors"
-                                >
-                                    {item.title}
-                                </Link>
-                            </div>
-                            <div className="flex justify-between items-center mb-2">
-                                <span className="inline-block apx-2 py-1 text-sm rounded-sm p-1 bg-blue-600 text-white">
-                                    {item.type}
-                                </span>
-                                <span className="text-yellow-400">★ {item.rating.toFixed(1)}</span>
-                            </div>
-                            <p className="mt-2 text-gray-300 text-sm line-clamp-2">{item.overview}</p>
-                            <p className="mt-2 text-gray-400 text-sm">{item.releaseDate}</p>
-                        </div>
-                    </div>
-                ))}
-            </div>
-            <FcNext className="flex absolute bg-black top-70 h-17 w-17 rounded-4xl right-4"/>
-        </div>
+        <>
+            <HeroSection featured={trending[0] || null} />
+            <ContentRow title="Trending Now" categorySlug="trending-now" items={trending} loading={loading} error={error} />
+        </>
     );
 }
 
-// Top Rated Movies Component
 export function TopRatedMovies() {
     const [topRatedMovies, setTopRatedMovies] = useState<Tmdb_info[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [retryCount, setRetryCount] = useState(0);
-
-    const itemToShow = useResponsiveItemCount();
 
     useEffect(() => {
         const fetchTopRatedMovies = async () => {
@@ -169,86 +364,23 @@ export function TopRatedMovies() {
                 setError(null);
                 const data = await fetchWithRetry<Tmdb_info[]>('http://localhost:3001/api/top-rated/movies');
                 setTopRatedMovies(data);
-                setRetryCount(0);
             } catch (err) {
                 setError(err instanceof Error ? err.message : 'An error occurred');
-                setRetryCount(prev => prev + 1);
             } finally {
                 setLoading(false);
             }
         };
 
         fetchTopRatedMovies();
-    }, [retryCount]);
+    }, []);
 
-    if (loading) {
-        return (
-            <div className="container mx-auto px-4 py-8">
-                <div className="flex justify-center items-center h-64">
-                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-                </div>
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div className="container mx-auto px-4 py-8">
-                <div className="text-red-500 text-center">
-                    Error: {error}
-                </div>
-            </div>
-        );
-    }
-
-    return (
-        <div className="container mx-auto px-4 py-8">
-            <div className="text-3xl flex justify-between font-bold text-white mb-6">
-                <h1>Top Rated Movies</h1>
-                <button className="text-sm border-1 p-1 rounded-xl">See More</button>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
-                {topRatedMovies.slice(0, itemToShow).map((item) => (
-                    <div key={item.id} className="bgx-gray-800 rounded-lg overflow-hidden shadow-lg hover:transform hover:scale-105 transition-transform duration-200">
-                        <img 
-                            src={item.imageUrl} 
-                            alt={item.title}
-                            className="w-full h-64 object-cover"
-                        />
-                        <div className="p-4">
-                            <div className="flex justify-between items-center mb-2">
-                                <Link 
-                                    to={`/${item.type}/${item.id}-${createSlug(item.title)}`}
-                                    className="text-xl font-semibold text-white hover:text-blue-400 transition-colors"
-                                >
-                                    {item.title}
-                                </Link>
-                            </div>
-                            <div className="flex justify-between items-center mb-2">
-                            <span className="inline-block apx-2 py-1 text-sm rounded-sm p-1 bg-blue-600 text-white">
-                                {item.type}
-                            </span>
-                            <span className="text-yellow-400">★ {item.rating.toFixed(1)}</span>
-                            </div>
-                            <p className="mt-2 text-gray-300 text-sm line-clamp-2">{item.overview}</p>
-                            <p className="mt-2 text-gray-400 text-sm">{item.releaseDate}</p>
-                        </div>
-                    </div>
-                ))}
-            </div>
-            <FcNext className="flex absolute bg-black top-70 h-17 w-17 rounded-4xl right-4"/>
-        </div>
-    );
+    return <ContentRow title="Top Rated Movies" categorySlug="top-rated-movies" items={topRatedMovies} loading={loading} error={error} />;
 }
 
-// Top Rated TV Shows Component
 export function TopRatedTV() {
     const [topRatedTV, setTopRatedTV] = useState<Tmdb_info[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [retryCount, setRetryCount] = useState(0);
-
-    const itemToShow = useResponsiveItemCount();
 
     useEffect(() => {
         const fetchTopRatedTV = async () => {
@@ -257,86 +389,23 @@ export function TopRatedTV() {
                 setError(null);
                 const data = await fetchWithRetry<Tmdb_info[]>('http://localhost:3001/api/top-rated/tv');
                 setTopRatedTV(data);
-                setRetryCount(0);
             } catch (err) {
                 setError(err instanceof Error ? err.message : 'An error occurred');
-                setRetryCount(prev => prev + 1);
             } finally {
                 setLoading(false);
             }
         };
 
         fetchTopRatedTV();
-    }, [retryCount]);
+    }, []);
 
-    if (loading) {
-        return (
-            <div className="container mx-auto px-4 py-8">
-                <div className="flex justify-center items-center h-64">
-                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-                </div>
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div className="container mx-auto px-4 py-8">
-                <div className="text-red-500 text-center">
-                    Error: {error}
-                </div>
-            </div>
-        );
-    }
-
-    return (
-        <div className="container mx-auto px-4 py-8">
-            <div className="text-3xl flex justify-between font-bold text-white mb-6">
-                <h1>Top Rated TV Shows</h1>
-                <button className="text-sm border-1 p-1 rounded-xl">See More</button>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
-                {topRatedTV.slice(0, itemToShow).map((item) => (
-                    <div key={item.id} className="bgx-gray-800 rounded-lg overflow-hidden shadow-lg hover:transform hover:scale-105 transition-transform duration-200">
-                        <img 
-                            src={item.imageUrl} 
-                            alt={item.title}
-                            className="w-full h-64 object-cover"
-                        />
-                        <div className="p-4">
-                            <div className="flex justify-between items-center mb-2">
-                                <Link 
-                                    to={`/${item.type}/${item.id}-${createSlug(item.title)}`}
-                                    className="text-xl font-semibold text-white hover:text-blue-400 transition-colors"
-                                >
-                                    {item.title}
-                                </Link>
-                            </div>
-                            <div className="flex justify-between items-center mb-2">
-                            <span className="inline-block apx-2 py-1 text-sm rounded-sm p-1 bg-blue-600 text-white">
-                                {item.type}
-                            </span>
-                            <span className="text-yellow-400">★ {item.rating.toFixed(1)}</span>
-                            </div>
-                            <p className="mt-2 text-gray-300 text-sm line-clamp-2">{item.overview}</p>
-                            <p className="mt-2 text-gray-400 text-sm">{item.releaseDate}</p>
-                        </div>
-                    </div>
-                ))}
-            </div>
-            <FcNext className="flex absolute bg-black top-70 h-17 w-17 rounded-4xl right-4"/>
-        </div>
-    );
+    return <ContentRow title="Top Rated TV Shows" categorySlug="top-rated-tv-shows" items={topRatedTV} loading={loading} error={error} />;
 }
 
-// Popular Movies Component
 export function PopularMovies() {
     const [popularMovies, setPopularMovies] = useState<Tmdb_info[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [retryCount, setRetryCount] = useState(0);
-
-    const itemToShow = useResponsiveItemCount();
 
     useEffect(() => {
         const fetchPopularMovies = async () => {
@@ -345,86 +414,23 @@ export function PopularMovies() {
                 setError(null);
                 const data = await fetchWithRetry<Tmdb_info[]>('http://localhost:3001/api/popular/movies');
                 setPopularMovies(data);
-                setRetryCount(0);
             } catch (err) {
                 setError(err instanceof Error ? err.message : 'An error occurred');
-                setRetryCount(prev => prev + 1);
             } finally {
                 setLoading(false);
             }
         };
 
         fetchPopularMovies();
-    }, [retryCount]);
+    }, []);
 
-    if (loading) {
-        return (
-            <div className="container mx-auto px-4 py-8">
-                <div className="flex justify-center items-center h-64">
-                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-                </div>
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div className="container mx-auto px-4 py-8">
-                <div className="text-red-500 text-center">
-                    Error: {error}
-                </div>
-            </div>
-        );
-    }
-
-    return (
-        <div className="container mx-auto px-4 py-8">
-            <div className="text-3xl flex justify-between font-bold text-white mb-6">
-                <h1>Popular Movies</h1>
-                <button className="text-sm border-1 p-1 rounded-xl">See More</button>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
-                {popularMovies.slice(0, itemToShow).map((item) => (
-                    <div key={item.id} className="bgx-gray-800 rounded-lg overflow-hidden shadow-lg hover:transform hover:scale-105 transition-transform duration-200">
-                        <img 
-                            src={item.imageUrl} 
-                            alt={item.title}
-                            className="w-full h-64 object-cover"
-                        />
-                        <div className="p-4">
-                            <div className="flex justify-between items-center mb-2">
-                                <Link 
-                                    to={`/${item.type}/${item.id}-${createSlug(item.title)}`}
-                                    className="text-xl font-semibold text-white hover:text-blue-400 transition-colors"
-                                >
-                                    {item.title}
-                                </Link>
-                            </div>
-                            <div className="flex justify-between items-center mb-2">
-                            <span className="inline-block apx-2 py-1 text-sm rounded-sm p-1 bg-blue-600 text-white">
-                                {item.type}
-                            </span>
-                            <span className="text-yellow-400">★ {item.rating.toFixed(1)}</span>
-                            </div>
-                            <p className="mt-2 text-gray-300 text-sm line-clamp-2">{item.overview}</p>
-                            <p className="mt-2 text-gray-400 text-sm">{item.releaseDate}</p>
-                        </div>
-                    </div>
-                ))}
-            </div>
-            <FcNext className="flex absolute bg-black top-70 h-17 w-17 rounded-4xl right-4"/>
-        </div>
-    );
+    return <ContentRow title="Popular Movies" categorySlug="popular-movies" items={popularMovies} loading={loading} error={error} />;
 }
 
-// Popular TV Shows Component
 export function PopularTV() {
     const [popularTV, setPopularTV] = useState<Tmdb_info[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [retryCount, setRetryCount] = useState(0);
-
-    const itemToShow = useResponsiveItemCount();
 
     useEffect(() => {
         const fetchPopularTV = async () => {
@@ -433,86 +439,30 @@ export function PopularTV() {
                 setError(null);
                 const data = await fetchWithRetry<Tmdb_info[]>('http://localhost:3001/api/popular/tv');
                 setPopularTV(data);
-                setRetryCount(0);
             } catch (err) {
                 setError(err instanceof Error ? err.message : 'An error occurred');
-                setRetryCount(prev => prev + 1);
             } finally {
                 setLoading(false);
             }
         };
 
         fetchPopularTV();
-    }, [retryCount]);
+    }, []);
 
-    if (loading) {
-        return (
-            <div className="container mx-auto px-4 py-8">
-                <div className="flex justify-center items-center h-64">
-                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-                </div>
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div className="container mx-auto px-4 py-8">
-                <div className="text-red-500 text-center">
-                    Error: {error}
-                </div>
-            </div>
-        );
-    }
-
-    return (
-        <div className="container mx-auto px-4 py-8">
-            <div className="text-3xl flex justify-between font-bold text-white mb-6">
-                <h1>Popular TV Shows</h1>
-                <button className="text-sm border-1 p-1 rounded-xl">See More</button>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
-                {popularTV.slice(0, itemToShow).map((item) => (
-                    <div key={item.id} className="bgx-gray-800 rounded-lg overflow-hidden shadow-lg hover:transform hover:scale-105 transition-transform duration-200">
-                        <img 
-                            src={item.imageUrl} 
-                            alt={item.title}
-                            className="w-full h-64 object-cover"
-                        />
-                        <div className="p-4">
-                            <div className="flex justify-between items-center mb-2">
-                                <Link 
-                                    to={`/${item.type}/${item.id}-${createSlug(item.title)}`}
-                                    className="text-xl font-semibold text-white hover:text-blue-400 transition-colors"
-                                >
-                                    {item.title}
-                                </Link>
-                            </div>
-                            <div className="flex justify-between items-center mb-2">
-                            <span className="inline-block apx-2 py-1 text-sm rounded-sm p-1 bg-blue-600 text-white">
-                                {item.type}
-                            </span>
-                            <span className="text-yellow-400">★ {item.rating.toFixed(1)}</span>
-                            </div>
-                            <p className="mt-2 text-gray-300 text-sm line-clamp-2">{item.overview}</p>
-                            <p className="mt-2 text-gray-400 text-sm">{item.releaseDate}</p>
-                        </div>
-                    </div>
-                ))}
-            </div>
-            <FcNext className="flex absolute bg-black top-70 h-17 w-17 rounded-4xl right-4"/>
-        </div>
-    );
+    return <ContentRow title="Popular TV Shows" categorySlug="popular-tv-shows" items={popularTV} loading={loading} error={error} />;
 }
 
 export default function HomePage() {
     return (
-        <div className="min-h-screen bg-gray-900">
+        <div className="min-h-screen bg-gradient-to-b from-[#0a0118] via-[#1a0a2e] to-[#0a0118]">
             <Trending />
             <TopRatedMovies />
             <TopRatedTV />
             <PopularMovies />
             <PopularTV />
+
+            {/* Bottom Gradient */}
+            <div className="h-32 bg-gradient-to-t from-[#0a0118] to-transparent"></div>
         </div>
     );
 }
