@@ -55,9 +55,9 @@ export default function Navbar() {
                 {/* <div>picture</div> */}
             </div>
             <ul className=" w-1/3 text-xl h-full flex flex-column items-center justify-center gap-20 p-2">
-                <li>Movies</li>
+                {/* <li>Movies</li>
                 <li>Anime</li>
-                <li>Books</li>
+                <li>Books</li> */}
             </ul>
             <div className="flex items-center flex-column p-2 relative">
                 <form onSubmit={handleSearch} className="flex items-center gap-2">
