@@ -261,44 +261,74 @@ function MovieCard({ item }: { item: Tmdb_info }) {
     );
 }
 
-// Hero Section Component
-function HeroSection({ featured }: { featured: Tmdb_info | null }) {
-    if (!featured) return null;
+// Hero Section Component with Carousel
+function HeroSection({ items }: { items: Tmdb_info[] }) {
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [isTransitioning, setIsTransitioning] = useState(false);
+
+    useEffect(() => {
+        if (items.length === 0) return;
+        const interval = setInterval(() => {
+            nextSlide();
+        }, 8000); // Change slide every 8 seconds
+        return () => clearInterval(interval);
+    }, [currentIndex, items.length]);
+
+    const nextSlide = () => {
+        if (items.length === 0 || isTransitioning) return;
+        setIsTransitioning(true);
+        setTimeout(() => setIsTransitioning(false), 500);
+        setCurrentIndex((prev) => (prev + 1) % items.length);
+    };
+
+    const prevSlide = () => {
+        if (items.length === 0 || isTransitioning) return;
+        setIsTransitioning(true);
+        setTimeout(() => setIsTransitioning(false), 500);
+        setCurrentIndex((prev) => (prev - 1 + items.length) % items.length);
+    };
+
+    if (items.length === 0) return null;
+
+    const featured = items[currentIndex];
 
     return (
-        <div className="relative h-[70vh] min-h-[500px] mb-12 overflow-hidden">
+        <div className="relative h-[85vh] min-h-[600px] mb-12 overflow-hidden group">
             {/* Background Image with Overlay */}
-            <div className="absolute inset-0">
+            <div className={`absolute inset-0 transition-opacity duration-1000 ${isTransitioning ? 'opacity-50' : 'opacity-100'}`}>
                 <img
                     src={featured.imageUrl}
                     alt={featured.title}
                     className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-black via-black/60 to-transparent"></div>
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0a0118] via-transparent to-transparent"></div>
             </div>
 
             {/* Content */}
-            <div className="relative h-full flex items-center px-4 md:px-8 lg:px-16">
-                <div className="max-w-2xl space-y-6">
+            <div className="relative h-full flex items-center px-4 md:px-8 lg:px-16 z-10">
+                <div className={`max-w-3xl space-y-6 transition-all duration-700 transform ${isTransitioning ? 'translate-y-10 opacity-0' : 'translate-y-0 opacity-100'}`}>
                     {/* Badge */}
                     <div className="flex items-center gap-3">
-                        <span className="bg-purple-600 text-white px-4 py-1.5 rounded-full text-sm font-semibold uppercase tracking-wide">
-                            Featured
+                        <span className="bg-purple-600 text-white px-4 py-1.5 rounded-full text-sm font-semibold uppercase tracking-wide shadow-lg shadow-purple-900/50">
+                            Trending Now
                         </span>
-                        <div className="flex items-center gap-2 bg-black/50 backdrop-blur-sm px-3 py-1.5 rounded-full">
+                        <div className="flex items-center gap-2 bg-black/50 backdrop-blur-sm px-3 py-1.5 rounded-full border border-white/10">
                             <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
                             <span className="text-white font-bold">{featured.rating.toFixed(1)}</span>
+                        </div>
+                        <div className="flex items-center gap-2 bg-black/50 backdrop-blur-sm px-3 py-1.5 rounded-full border border-white/10">
+                            <span className="text-gray-300 font-semibold uppercase text-xs">{featured.type}</span>
                         </div>
                     </div>
 
                     {/* Title */}
-                    <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white leading-tight">
+                    <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-white leading-tight tracking-tight drop-shadow-2xl">
                         {featured.title}
                     </h1>
 
                     {/* Overview */}
-                    <p className="text-gray-300 text-lg md:text-xl line-clamp-3 max-w-xl">
+                    <p className="text-gray-300 text-lg md:text-xl line-clamp-3 max-w-2xl font-medium drop-shadow-md">
                         {featured.overview}
                     </p>
 
@@ -306,17 +336,47 @@ function HeroSection({ featured }: { featured: Tmdb_info | null }) {
                     <div className="flex flex-wrap gap-4 pt-4">
                         <Link
                             to={`/${featured.type}/${featured.id}-${createSlug(featured.title)}`}
-                            className="bg-purple-600 hover:bg-purple-500 text-white px-8 py-3 rounded-full font-semibold flex items-center gap-2 transition-all duration-300 hover:scale-105 shadow-lg shadow-purple-600/50"
+                            className="bg-white text-black hover:bg-gray-200 px-8 py-4 rounded-full font-bold flex items-center gap-2 transition-all duration-300 hover:scale-105 shadow-xl"
                         >
-                            <Play className="w-5 h-5 fill-white" />
-                            Watch Now
+                            <Play className="w-5 h-5 fill-black" />
+                            Play Now
                         </Link>
-                        <button className="bg-white/10 hover:bg-white/20 text-white px-8 py-3 rounded-full font-semibold backdrop-blur-sm border border-white/20 transition-all duration-300 hover:scale-105">
+                        <Link
+                            to={`/${featured.type}/${featured.id}-${createSlug(featured.title)}`}
+                            className="bg-gray-800/60 hover:bg-gray-700/80 text-white px-8 py-4 rounded-full font-bold backdrop-blur-md border border-white/10 transition-all duration-300 hover:scale-105"
+                        >
                             More Info
-                        </button>
+                        </Link>
                     </div>
                 </div>
             </div>
+
+            {/* Navigation Arrows */}
+            <button
+                onClick={prevSlide}
+                className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-black/30 hover:bg-black/60 text-white p-3 rounded-full backdrop-blur-sm border border-white/10 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110"
+            >
+                <ChevronLeft className="w-8 h-8" />
+            </button>
+            <button
+                onClick={nextSlide}
+                className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-black/30 hover:bg-black/60 text-white p-3 rounded-full backdrop-blur-sm border border-white/10 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110"
+            >
+                <ChevronRight className="w-8 h-8" />
+            </button>
+
+            {/* Indicators */}
+            <div className="absolute bottom-8 right-8 z-20 flex gap-2">
+                {items.slice(0, 10).map((_, index) => (
+                    <button
+                        key={index}
+                        onClick={() => setCurrentIndex(index)}
+                        className={`h-1.5 rounded-full transition-all duration-300 ${index === currentIndex ? 'w-8 bg-white' : 'w-4 bg-white/30 hover:bg-white/50'}`}
+                    />
+                ))}
+            </div>
+            {/* Gradient Overlay Bottom */}
+            <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#0a0118] to-transparent z-0"></div>
         </div>
     );
 }
@@ -335,6 +395,7 @@ export function Trending() {
                 const data = await fetchWithRetry<Tmdb_info[]>('http://localhost:3001/api/trending');
                 setTrending(data);
             } catch (err) {
+                console.error("Failed to fetch trending:", err);
                 setError(err instanceof Error ? err.message : 'An error occurred');
             } finally {
                 setLoading(false);
@@ -344,11 +405,11 @@ export function Trending() {
         fetchTrending();
     }, []);
 
+    // Take top 5 items for the carousel
+    const carouselItems = trending.slice(0, 10);
+
     return (
-        <>
-            <HeroSection featured={trending[0] || null} />
-            <ContentRow title="Trending Now" categorySlug="trending-now" items={trending} loading={loading} error={error} />
-        </>
+        <HeroSection items={carouselItems} />
     );
 }
 
