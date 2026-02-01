@@ -78,89 +78,131 @@ export default function Navbar() {
     };
 
     return (
-        <nav className="flex font-bold text-blue-300 h-15 justify-around bg-black relative">
-            <div className="flex items-center w-60 flex-column p-2">
-                <div className='text-fuchsia-500 text-3xl' >StarVault</div>
-                {/* <div>picture</div> */}
+        <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-12 py-4 bg-black/60 backdrop-blur-xl border-b border-white/5 transition-all duration-300">
+            {/* Logo Section */}
+            <div className="flex items-center cursor-pointer group" onClick={() => navigate('/')}>
+                <div className="text-3xl font-black tracking-tighter bg-gradient-to-r from-fuchsia-500 via-purple-500 to-indigo-500 bg-clip-text text-transparent group-hover:opacity-90 transition-opacity">
+                    StarVault
+                </div>
             </div>
-            <ul className=" w-1/3 text-xl h-full flex flex-column items-center justify-center gap-20 p-2">
-                {/* <li>Movies</li>
-                <li>Anime</li>
-                <li>Books</li> */}
-            </ul>
-            <div className="flex items-center flex-column p-2 relative">
-                <form onSubmit={handleSearch} className="flex items-center gap-2">
-                    <input
-                        className='p-2 bg-blue-800 h-9 text-amber-50 placeholder-amber-50 outline-0 rounded-2xl'
-                        type="text"
-                        placeholder='Search'
-                        value={searchQuery}
-                        onChange={handleChange}
-                        onFocus={() => {
-                            if (searchResults.length > 0 || loading) {
-                                setShowResults(true);
-                            }
-                        }}
-                    />
-                    <button
-                        type="submit"
-                        className="text-amber-50 hover:text-blue-300 cursor-pointer"
-                        disabled={loading}
-                    >
-                        <SearchIcon />
-                    </button>
-                </form>
 
-                {showResults && (
-                    <>
-                        {loading ? (
-                            <div className="absolute top-full left-0 mt-2 w-96 bg-gray-800 rounded-lg shadow-lg z-50 p-4 text-center">
-                                <div className="flex justify-center items-center gap-2 text-amber-50">
-                                    <div className="animate-spin rounded-full h-5 w-5 border-2 border-amber-50 border-t-transparent"></div>
-                                    <span>Loading...</span>
+            {/* Navigation Links (Placeholder for future) */}
+            <ul className="hidden md:flex gap-8 text-gray-300 font-medium">
+                {['Movies', 'TV Shows', 'Anime'].map((item) => (
+                    <li key={item} className="hover:text-white cursor-pointer transition-colors relative group">
+                        {item}
+                        <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-fuchsia-500 to-purple-600 transition-all duration-300 group-hover:w-full"></span>
+                    </li>
+                ))}
+            </ul>
+
+            <div className="flex items-center gap-6">
+                {/* Search Section */}
+                <div className="relative group/search">
+                    <form onSubmit={handleSearch} className="relative flex items-center">
+                        <input
+                            className={`
+                                py-2.5 pl-10 pr-4 
+                                bg-white/5 border border-white/10 
+                                text-white placeholder-gray-400 
+                                rounded-full outline-none 
+                                focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 focus:bg-white/10
+                                transition-all duration-300
+                                w-[180px] focus:w-[280px] md:focus:w-[320px]
+                            `}
+                            type="text"
+                            placeholder='Search...'
+                            value={searchQuery}
+                            onChange={handleChange}
+                            onFocus={() => {
+                                if (searchResults.length > 0 || loading) {
+                                    setShowResults(true);
+                                }
+                            }}
+                        />
+                        <button
+                            type="submit"
+                            className="absolute left-3 text-gray-400 group-focus-within/search:text-purple-400 transition-colors"
+                            disabled={loading}
+                        >
+                            <SearchIcon fontSize="small" />
+                        </button>
+                    </form>
+
+                    {/* Search Results Dropdown */}
+                    {showResults && (
+                        <div className="absolute top-full right-0 mt-4 w-[320px] md:w-[400px] max-h-[70vh] overflow-y-auto bg-[#0f0f13]/95 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl shadow-black/50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                            {loading ? (
+                                <div className="p-8 text-center">
+                                    <div className="flex flex-col items-center justify-center gap-3 text-purple-300">
+                                        <div className="animate-spin rounded-full h-6 w-6 border-2 border-purple-500 border-t-transparent"></div>
+                                        <span className="text-sm font-medium">Searching the galaxy...</span>
+                                    </div>
                                 </div>
-                            </div>
-                        ) : searchResults.length > 0 ? (
-                            <div className="absolute top-full left-0 mt-2 w-96 max-h-96 overflow-y-auto bg-gray-800 rounded-lg shadow-lg z-50">
-                                {searchResults.map((item) => (
-                                    <div
-                                        key={`${item.type}-${item.id}`}
-                                        onClick={() => handleResultClick(item)}
-                                        className="p-3 hover:bg-gray-700 cursor-pointer border-b border-gray-700 last:border-b-0"
-                                    >
-                                        <div className="flex gap-3">
-                                            {item.imageUrl && (
-                                                <img
-                                                    src={item.imageUrl}
-                                                    alt={item.title}
-                                                    className="w-16 h-24 object-cover rounded"
-                                                />
-                                            )}
-                                            <div className="flex-1">
-                                                <h3 className="text-white font-semibold">{item.title}</h3>
-                                                <p className="text-gray-400 text-sm">{item.type === 'movie' ? 'Movie' : 'TV Show'}</p>
-                                                {item.releaseDate && (
-                                                    <p className="text-gray-500 text-xs">{new Date(item.releaseDate).getFullYear()}</p>
-                                                )}
-                                                {item.rating > 0 && (
-                                                    <p className="text-yellow-400 text-xs">⭐ {item.rating.toFixed(1)}</p>
-                                                )}
+                            ) : searchResults.length > 0 ? (
+                                <div className="py-2">
+                                    <div className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                        Top Results
+                                    </div>
+                                    {searchResults.map((item) => (
+                                        <div
+                                            key={`${item.type}-${item.id}`}
+                                            onClick={() => handleResultClick(item)}
+                                            className="px-4 py-3 hover:bg-white/5 cursor-pointer transition-colors border-b border-white/5 last:border-0 group/item"
+                                        >
+                                            <div className="flex gap-4">
+                                                <div className="flex-shrink-0 w-12 h-16 rounded-md overflow-hidden bg-gray-800 shadow-md">
+                                                    {item.imageUrl ? (
+                                                        <img
+                                                            src={item.imageUrl}
+                                                            alt={item.title}
+                                                            className="w-full h-full object-cover group-hover/item:scale-110 transition-transform duration-500"
+                                                        />
+                                                    ) : (
+                                                        <div className="w-full h-full flex items-center justify-center bg-gray-700">
+                                                            <span className="text-xs text-gray-500">N/A</span>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <h3 className="text-gray-100 font-semibold truncate group-hover/item:text-purple-400 transition-colors">
+                                                        {item.title}
+                                                    </h3>
+                                                    <div className="flex items-center gap-2 mt-1">
+                                                        <span className="text-xs font-medium px-2 py-0.5 rounded bg-white/10 text-gray-300">
+                                                            {item.type === 'movie' ? 'Movie' : 'TV'}
+                                                        </span>
+                                                        {item.rating > 0 && (
+                                                            <div className="flex items-center gap-1 text-xs text-yellow-500">
+                                                                <span>★</span>
+                                                                <span>{item.rating.toFixed(1)}</span>
+                                                            </div>
+                                                        )}
+                                                        <span className="text-xs text-gray-500">
+                                                            {item.releaseDate ? new Date(item.releaseDate).getFullYear() : ''}
+                                                        </span>
+
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                ))}
-                            </div>
-                        ) : (
-                            <div className="absolute top-full left-0 mt-2 w-96 bg-gray-800 rounded-lg shadow-lg z-50 p-4 text-center text-gray-400">
-                                No results found
-                            </div>
-                        )}
-                    </>
-                )}
-            </div>
-            <div className="flex items-center">
-                <button className='flex rounded-xl bg-emerald-700 text-white justify-center items-center p-2 w-22 h-9 flex-column'>Sign Up</button>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="p-8 text-center">
+                                    <p className="text-gray-400 font-medium">No results found</p>
+                                    <p className="text-gray-600 text-sm mt-1">Try searching for something else</p>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
+
+                {/* Sign Up Button */}
+                <button className="hidden sm:block px-6 py-2.5 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold text-sm shadow-lg shadow-purple-900/30 hover:shadow-purple-700/50 hover:scale-105 active:scale-95 transition-all duration-300 border border-white/10">
+                    Sign Up
+                </button>
             </div>
         </nav>
-    )
+    );
 }
