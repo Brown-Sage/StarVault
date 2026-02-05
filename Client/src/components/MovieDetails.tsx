@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { fetchWithRetry } from './HomePage';
+import { getReviews } from './reviewApi';
 
 interface CastMember {
     id: number;
@@ -40,7 +41,9 @@ export default function MovieDetails() {
     const [movie, setMovie] = useState<MovieDetails | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+
     const [showTrailer, setShowTrailer] = useState(false);
+    const [reviews, setReviews] = useState<any[]>([]);
 
     useEffect(() => {
         const fetchMovieDetails = async () => {
@@ -61,6 +64,7 @@ export default function MovieDetails() {
         };
         if (id && type) {
             fetchMovieDetails();
+            getReviews(id.toString()).then(setReviews);
         }
     }, [id, type]);
 
@@ -125,7 +129,7 @@ export default function MovieDetails() {
                             alt={movie.title}
                             className="w-full rounded-2xl shadow-2xl object-cover"
                         />
-                        
+
                     </div>
                     {/* Details */}
                     <div className="flex-1 flex flex-col justify-center">
@@ -174,7 +178,7 @@ export default function MovieDetails() {
                                     </span>
                                 </div>
                                 <span className="text-sm text-gray-300 font-semibold">User Score</span>
-                                <span className="ml-2 text-2xl">🥳😲😶</span>           
+                                <span className="ml-2 text-2xl">🥳😲😶</span>
                             </div>
                             {/* Play Trailer Button */}
                             {movie.trailerKey && (
@@ -238,6 +242,30 @@ export default function MovieDetails() {
                     </div>
                 </div>
             )}
-        </div>
+
+            {/* Reviews Section */}
+            <div className="container mx-auto px-4 py-8">
+                <h2 className="text-2xl font-bold mb-4 text-white">Reviews</h2>
+                {reviews.length === 0 ? (
+                    <p className="text-gray-400">No reviews yet</p>
+                ) : (
+                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                        {reviews.map((review: any) => (
+                            <div key={review._id} className="bg-gray-800 p-4 rounded-xl shadow-md border border-gray-700">
+                                <div className="flex items-center justify-between mb-2">
+                                    <span className="font-bold text-blue-400 text-sm truncate">
+                                        {review.user?.email || 'Unknown User'}
+                                    </span>
+                                    <span className="bg-green-600 text-white text-xs px-2 py-1 rounded font-bold">
+                                        {review.rating}/10
+                                    </span>
+                                </div>
+                                <p className="text-gray-300 text-sm italic">"{review.comment}"</p>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+        </div >
     );
 } 
