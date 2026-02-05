@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import mediaRoutes from './routes/mediaRoutes';
 import searchRoutes from './routes/searchRoutes';
+import authRoutes from './routes/authRoutes';
 
 const app = express();
 
@@ -12,6 +13,7 @@ app.use(express.json());
 // Routes
 app.use('/api', mediaRoutes);
 app.use('/api', searchRoutes);
+app.use('/api/auth', authRoutes);
 
 // Helper route
 app.get('/api/test', (req, res) => {
