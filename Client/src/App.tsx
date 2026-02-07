@@ -4,6 +4,8 @@ import BrowseAll from './components/BrowseAll';
 import HomePage from "./components/HomePage";
 import MovieDetails from './components/MovieDetails';
 import Navbar from './components/Navbar';
+import Login from './components/login';
+import Register from './components/Register';
 
 function App() {
   return (
@@ -12,6 +14,8 @@ function App() {
         <Navbar />
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
           <Route path="/browse/:category" element={<BrowseAll />} />
           <Route path="/:type/:id" element={<MovieDetails />} />
         </Routes>

@@ -198,8 +198,19 @@ export default function Navbar() {
                     )}
                 </div>
 
+                {/* Login Button */}
+                <button
+                    onClick={() => navigate('/login')}
+                    className="hidden sm:block px-6 py-2.5 rounded-full text-white font-semibold text-sm hover:text-purple-400 transition-all duration-300"
+                >
+                    Login
+                </button>
+
                 {/* Sign Up Button */}
-                <button className="hidden sm:block px-6 py-2.5 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold text-sm shadow-lg shadow-purple-900/30 hover:shadow-purple-700/50 hover:scale-105 active:scale-95 transition-all duration-300 border border-white/10">
+                <button
+                    onClick={() => navigate('/register')}
+                    className="hidden sm:block px-6 py-2.5 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold text-sm shadow-lg shadow-purple-900/30 hover:shadow-purple-700/50 hover:scale-105 active:scale-95 transition-all duration-300 border border-white/10"
+                >
                     Sign Up
                 </button>
             </div>
