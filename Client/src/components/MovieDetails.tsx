@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { fetchWithRetry } from './HomePage';
 import { getReviews } from './reviewApi';
+import { createReview } from "./reviewPostApi";
+
 
 interface CastMember {
     id: number;
@@ -44,6 +46,9 @@ export default function MovieDetails() {
 
     const [showTrailer, setShowTrailer] = useState(false);
     const [reviews, setReviews] = useState<any[]>([]);
+    const [rating, setRating] = useState(10);
+    const [comment, setComment] = useState("");
+
 
     useEffect(() => {
         const fetchMovieDetails = async () => {
@@ -91,6 +96,17 @@ export default function MovieDetails() {
         const m = min % 60;
         return `${h > 0 ? h + 'h ' : ''}${m}m`;
     };
+
+    const handleSubmitReview = async () => {
+        if (!id || !type) {
+            alert("Cannot post review: Missing movie details");
+            return;
+        }
+        await createReview(id, type, rating, comment);
+        alert("Review posted");
+        setComment("");
+    };
+
 
     return (
         <div className="min-h-screen bg-gray-900 text-white">
@@ -242,6 +258,29 @@ export default function MovieDetails() {
                     </div>
                 </div>
             )}
+
+            <div className="mt-6">
+                <h3>Write Review</h3>
+
+                <input
+                    type="number"
+                    min="1"
+                    max="10"
+                    value={rating}
+                    onChange={(e) => setRating(Number(e.target.value))}
+                />
+
+                <textarea
+                    placeholder="Your review..."
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                />
+
+                <button onClick={handleSubmitReview}>
+                    Submit Review
+                </button>
+            </div>
+
 
             {/* Reviews Section */}
             <div className="container mx-auto px-4 py-8">
