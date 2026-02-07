@@ -315,7 +315,7 @@ function HeroSection({ items }: { items: Tmdb_info[] }) {
                         </span>
                         <div className="flex items-center gap-2 bg-black/50 backdrop-blur-sm px-3 py-1.5 rounded-full border border-white/10">
                             <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                            <span className="text-white font-bold">{featured.rating.toFixed(1)}</span>
+                            <span className="text-white font-bold">{Number(featured.rating).toFixed(1)}</span>
                         </div>
                         <div className="flex items-center gap-2 bg-black/50 backdrop-blur-sm px-3 py-1.5 rounded-full border border-white/10">
                             <span className="text-gray-300 font-semibold uppercase text-xs">{featured.type}</span>
