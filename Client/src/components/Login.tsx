@@ -10,6 +10,7 @@ const Login = () => {
     const handleLogin = async () => {
         const data = await loginUser(email, password);
         localStorage.setItem("token", data.token);
+        localStorage.setItem("userEmail", email);
 
         alert("Logged in");
         navigate("/");

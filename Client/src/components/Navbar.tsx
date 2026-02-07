@@ -1,7 +1,8 @@
 import SearchIcon from '@mui/icons-material/Search'
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import type { FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
+import md5 from 'md5';
 
 interface Tmdb_info {
     id: number;
@@ -18,8 +19,33 @@ export default function Navbar() {
     const [searchResults, setSearchResults] = useState<Tmdb_info[]>([]);
     const [showResults, setShowResults] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
     const navigate = useNavigate();
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        const email = localStorage.getItem("userEmail");
+
+        if (token) {
+            setIsLoggedIn(true);
+            if (email) {
+                setAvatarUrl(`https://www.gravatar.com/avatar/${md5(email.trim().toLowerCase())}?d=identicon`);
+            }
+        } else {
+            setIsLoggedIn(false);
+            setAvatarUrl(null);
+        }
+    }, []);
+
+    const handleLogout = () => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("userEmail");
+        setIsLoggedIn(false);
+        setAvatarUrl(null);
+        navigate('/');
+    };
 
     const performSearch = async (query: string) => {
         if (!query.trim()) {
@@ -198,21 +224,41 @@ export default function Navbar() {
                     )}
                 </div>
 
-                {/* Login Button */}
-                <button
-                    onClick={() => navigate('/login')}
-                    className="hidden sm:block px-6 py-2.5 rounded-full text-white font-semibold text-sm hover:text-purple-400 transition-all duration-300"
-                >
-                    Login
-                </button>
-
-                {/* Sign Up Button */}
-                <button
-                    onClick={() => navigate('/register')}
-                    className="hidden sm:block px-6 py-2.5 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold text-sm shadow-lg shadow-purple-900/30 hover:shadow-purple-700/50 hover:scale-105 active:scale-95 transition-all duration-300 border border-white/10"
-                >
-                    Sign Up
-                </button>
+                {/* Login/Attributes Section */}
+                {isLoggedIn ? (
+                    <div className="flex items-center gap-4">
+                        {avatarUrl ? (
+                            <img
+                                src={avatarUrl}
+                                alt="User Avatar"
+                                className="w-10 h-10 rounded-full border border-green-500 object-cover"
+                            />
+                        ) : (
+                            <div className="w-10 h-10 rounded-full border border-gray-500 bg-gray-700"></div>
+                        )}
+                        <button
+                            onClick={handleLogout}
+                            className="px-4 py-2 rounded-full text-white font-semibold text-sm hover:text-red-400 transition-colors"
+                        >
+                            Logout
+                        </button>
+                    </div>
+                ) : (
+                    <>
+                        <button
+                            onClick={() => navigate('/login')}
+                            className="hidden sm:block px-6 py-2.5 rounded-full text-white font-semibold text-sm hover:text-purple-400 transition-all duration-300"
+                        >
+                            Login
+                        </button>
+                        <button
+                            onClick={() => navigate('/register')}
+                            className="hidden sm:block px-6 py-2.5 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold text-sm shadow-lg shadow-purple-900/30 hover:shadow-purple-700/50 hover:scale-105 active:scale-95 transition-all duration-300 border border-white/10"
+                        >
+                            Sign Up
+                        </button>
+                    </>
+                )}
             </div>
         </nav>
     );
