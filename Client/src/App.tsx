@@ -7,6 +7,8 @@ import Navbar from './components/Navbar';
 import Login from './components/Login';
 import Register from './components/Register';
 
+import MyReviews from './pages/MyReviews';
+
 function App() {
   return (
     <Router>
@@ -18,6 +20,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/browse/:category" element={<BrowseAll />} />
           <Route path="/:type/:id" element={<MovieDetails />} />
+          <Route path="/my-reviews" element={<MyReviews />} />
         </Routes>
       </div>
     </Router>

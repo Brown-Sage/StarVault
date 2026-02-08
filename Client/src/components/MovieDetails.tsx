@@ -101,13 +101,23 @@ export default function MovieDetails() {
     };
 
     const handleSubmitReview = async () => {
-        if (!id || !type) {
+        if (!id || !type || !movie) {
             alert("Cannot post review: Missing movie details");
             return;
         }
-        await createReview(id, type, rating, comment);
+        await createReview(
+            id,
+            type,
+            movie.title,
+            movie.imageUrl,
+            movie.releaseDate,
+            rating,
+            comment
+        );
         alert("Review posted");
         setComment("");
+        // Refresh reviews
+        getReviews(id.toString()).then(setReviews);
     };
 
 

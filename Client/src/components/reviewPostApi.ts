@@ -3,6 +3,9 @@ import axios from "axios";
 export const createReview = async (
     mediaId: string,
     mediaType: string,
+    mediaTitle: string,
+    mediaPoster: string,
+    mediaReleaseDate: string,
     rating: number,
     comment: string
 ) => {
@@ -11,7 +14,15 @@ export const createReview = async (
 
     const res = await axios.post(
         `${API}/api/reviews`,
-        { mediaId, mediaType, rating, comment },
+        {
+            mediaId,
+            mediaType,
+            mediaTitle,
+            mediaPoster,
+            mediaReleaseDate,
+            rating,
+            comment,
+        },
         {
             headers: {
                 Authorization: `Bearer ${token}`,

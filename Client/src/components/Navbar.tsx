@@ -237,6 +237,12 @@ export default function Navbar() {
                             <div className="w-10 h-10 rounded-full border border-gray-500 bg-gray-700"></div>
                         )}
                         <button
+                            onClick={() => navigate('/my-reviews')}
+                            className="text-gray-300 hover:text-white font-medium text-sm transition-colors"
+                        >
+                            My Reviews
+                        </button>
+                        <button
                             onClick={handleLogout}
                             className="px-4 py-2 rounded-full text-white font-semibold text-sm hover:text-red-400 transition-colors"
                         >

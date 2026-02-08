@@ -4,6 +4,9 @@ export interface IReview extends Document {
     user: mongoose.Types.ObjectId;
     mediaId: string;
     mediaType: 'movie' | 'tv';
+    mediaTitle: string;
+    mediaPoster?: string;
+    mediaReleaseDate?: string;
     rating: number;
     comment: string;
     createdAt: Date;
@@ -24,6 +27,18 @@ const reviewSchema: Schema = new Schema({
         type: String,
         enum: ['movie', 'tv'],
         required: true,
+    },
+    mediaTitle: {
+        type: String,
+        required: true,
+    },
+    mediaPoster: {
+        type: String,
+        required: false,
+    },
+    mediaReleaseDate: {
+        type: String,
+        required: false,
     },
     rating: {
         type: Number,
