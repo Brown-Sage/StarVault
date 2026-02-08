@@ -5,6 +5,15 @@ interface JwtPayload {
     userId: string;
 }
 
+// Extend Express Request interface to include user
+declare global {
+    namespace Express {
+        interface Request {
+            user?: string;
+        }
+    }
+}
+
 export const protect = (
     req: Request,
     res: Response,
@@ -24,7 +33,7 @@ export const protect = (
             process.env.JWT_SECRET as string
         ) as JwtPayload;
 
-        (req as any).userId = decoded.userId;
+        req.user = decoded.userId;
 
         next();
     } catch (err) {

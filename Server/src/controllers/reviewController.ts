@@ -4,7 +4,7 @@ import Review from '../models/Review';
 export const createReview = async (req: Request, res: Response) => {
     try {
         const { mediaId, mediaType, rating, comment } = req.body;
-        const userId = (req as any).userId;
+        const userId = req.user;
 
         if (!mediaId || !mediaType || !rating || !comment) {
             return res.status(400).json({ message: 'All fields are required' });
