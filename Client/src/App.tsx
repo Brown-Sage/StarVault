@@ -4,7 +4,7 @@ import BrowseAll from './components/BrowseAll';
 import HomePage from "./components/HomePage";
 import MovieDetails from './components/MovieDetails';
 import Navbar from './components/Navbar';
-import Login from './components/login';
+import Login from './components/Login';
 import Register from './components/Register';
 
 function App() {

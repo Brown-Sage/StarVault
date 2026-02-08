@@ -12,36 +12,7 @@ interface Tmdb_info {
     releaseDate: string;
 }
 
-const useResponsiveItemCount = () => {
-    const [itemCount, setItemCount] = useState(6);
 
-    useEffect(() => {
-        const calculateItemCount = () => {
-            const width = window.innerWidth;
-            if (width < 640) { // sm
-                return 2;
-            } else if (width < 768) { // md
-                return 3;
-            } else if (width < 1024) { // lg
-                return 4;
-            } else if (width < 1280) { // xl
-                return 5;
-            } else {
-                return 6; // 2xl and above
-            }
-        };
-
-        const handleResize = () => {
-            setItemCount(calculateItemCount());
-        };
-
-        handleResize();
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
-
-    return itemCount;
-};
 
 // Utility function for fetching data with retry
 export async function fetchWithRetry<T>(url: string, retries = 3, delay = 1000): Promise<T> {
@@ -92,7 +63,7 @@ interface ContentRowProps {
     error: string | null;
 }
 
-function ContentRow({ title, categorySlug, items, loading, error }: ContentRowProps) {
+function ContentRow({ title, items, loading, error }: ContentRowProps) {
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const [canScrollLeft, setCanScrollLeft] = useState(false);
     const [canScrollRight, setCanScrollRight] = useState(true);
@@ -384,21 +355,14 @@ function HeroSection({ items }: { items: Tmdb_info[] }) {
 // Main Section Components
 export function Trending() {
     const [trending, setTrending] = useState<Tmdb_info[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchTrending = async () => {
             try {
-                setLoading(true);
-                setError(null);
                 const data = await fetchWithRetry<Tmdb_info[]>('http://localhost:3001/api/trending');
                 setTrending(data);
             } catch (err) {
                 console.error("Failed to fetch trending:", err);
-                setError(err instanceof Error ? err.message : 'An error occurred');
-            } finally {
-                setLoading(false);
             }
         };
 
