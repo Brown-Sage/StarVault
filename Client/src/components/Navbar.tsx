@@ -107,7 +107,7 @@ export default function Navbar() {
         <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-12 py-4 bg-black/60 backdrop-blur-xl border-b border-white/5 transition-all duration-300">
             {/* Logo Section */}
             <div className="flex items-center cursor-pointer group" onClick={() => navigate('/')}>
-                <div className="text-3xl font-black tracking-tighter bg-gradient-to-r from-fuchsia-500 via-purple-500 to-indigo-500 bg-clip-text text-transparent group-hover:opacity-90 transition-opacity">
+                <div className="text-3xl font-black tracking-tighter bg-gradient-to-r from-fuchsia-200 via-purple-300 to-indigo-400 bg-clip-text text-transparent group-hover:opacity-90 transition-opacity">
                     StarVault
                 </div>
             </div>

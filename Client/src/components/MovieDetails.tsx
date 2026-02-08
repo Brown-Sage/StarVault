@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
+import { Star } from 'lucide-react';
 import { fetchWithRetry } from './HomePage';
 import { getReviews } from './reviewApi';
 import { createReview } from "./reviewPostApi";
@@ -48,6 +49,8 @@ export default function MovieDetails() {
     const [reviews, setReviews] = useState<any[]>([]);
     const [rating, setRating] = useState(10);
     const [comment, setComment] = useState("");
+    const token = localStorage.getItem("token");
+
 
 
     useEffect(() => {
@@ -164,48 +167,45 @@ export default function MovieDetails() {
                                 <span>{formatRuntime(movie.runtime)}</span>
                             )}
                         </div>
-                        <div className="flex items-center gap-6 mb-4">
-                            {/* User Score */}
-                            <div className="flex items-center gap-4">
-                                <div className="relative w-12 h-12">
-                                    <svg className="w-12 h-12" viewBox="0 0 36 36">
-                                        <path
-                                            className="text-gray-700"
-                                            stroke="#22223b"
-                                            strokeWidth="3"
-                                            fill="none"
-                                            d="M18 2.0845
-                                                a 15.9155 15.9155 0 0 1 0 31.831
-                                                a 15.9155 15.9155 0 0 1 0 -31.831"
-                                        />
-                                        <path
-                                            className="text-green-400"
-                                            stroke="#4ade80"
-                                            strokeWidth="3"
-                                            fill="none"
-                                            strokeDasharray={`${movie.rating * 10}, 100`}
-                                            d="M18 2.0845
-                                                a 15.9155 15.9155 0 0 1 0 31.831
-                                                a 15.9155 15.9155 0 0 1 0 -31.831"
-                                        />
-                                    </svg>
-                                    <span className="absolute inset-0 flex items-center justify-center text-lg font-bold text-white">
-                                        {Math.round(movie.rating * 10)}<span className="text-xs">%</span>
-                                    </span>
+                        <div className="flex items-center gap-6 mb-6">
+                            {/* Rating Block */}
+                            <div className="flex items-center gap-3 bg-white/5 backdrop-blur-sm rounded-xl px-4 py-2 border border-white/10">
+                                <span className="text-2xl font-bold text-white tracking-tight">
+                                    {movie.rating ? movie.rating.toFixed(1) : "N/A"}
+                                </span>
+                                <div className="h-4 w-px bg-white/20 mx-1"></div>
+                                <div className="flex gap-1">
+                                    {[1, 2, 3, 4, 5].map((index) => {
+                                        const fillPercentage = Math.min(Math.max((movie.rating - (index - 1) * 2) / 2 * 100, 0), 100);
+                                        return (
+                                            <div key={index} className="relative">
+                                                <Star className="w-5 h-5 text-gray-600 fill-gray-600/20" />
+                                                <div className="absolute top-0 left-0 overflow-hidden" style={{ width: `${fillPercentage}%` }}>
+                                                    <Star className="w-5 h-5 text-yellow-400 fill-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.5)]" />
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
                                 </div>
-                                <span className="text-sm text-gray-300 font-semibold">User Score</span>
-                                <span className="ml-2 text-2xl">🥳😲😶</span>
                             </div>
+
+                            {/* Actions Divider */}
+                            {movie.trailerKey && (
+                                <div className="h-8 w-px bg-white/10"></div>
+                            )}
+
                             {/* Play Trailer Button */}
                             {movie.trailerKey && (
                                 <button
-                                    className="flex items-center gap-2 bg-blue-700 hover:bg-blue-800 text-white px-4 py-2 rounded-lg font-semibold shadow"
+                                    className="group flex items-center gap-3 bg-white hover:bg-gray-200 text-black px-6 py-2.5 rounded-full font-bold shadow-lg shadow-white/10 transition-all duration-300 hover:scale-105 active:scale-95"
                                     onClick={() => setShowTrailer(true)}
                                 >
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.25v13.5l13.5-6.75-13.5-6.75z" />
-                                    </svg>
-                                    Play Trailer
+                                    <div className="w-6 h-6 bg-black rounded-full flex items-center justify-center group-hover:bg-purple-600 transition-colors">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3 text-white ml-0.5">
+                                            <path d="M5.25 5.25v13.5l13.5-6.75-13.5-6.75z" />
+                                        </svg>
+                                    </div>
+                                    <span>Watch Trailer</span>
                                 </button>
                             )}
                         </div>
@@ -259,26 +259,68 @@ export default function MovieDetails() {
                 </div>
             )}
 
-            <div className="mt-6">
-                <h3>Write Review</h3>
+            {/* Write Review Section */}
+            <div className="container mx-auto px-4 py-8">
+                <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6 md:p-8 border border-white/10 shadow-xl">
+                    <h3 className="text-2xl font-bold mb-6 text-white flex items-center gap-2">
+                        <span className="bg-purple-600 w-1 h-8 rounded-full"></span>
+                        Write a Review
+                    </h3>
 
-                <input
-                    type="number"
-                    min="1"
-                    max="10"
-                    value={rating}
-                    onChange={(e) => setRating(Number(e.target.value))}
-                />
+                    {token ? (
+                        <div className="space-y-6">
+                            <div>
+                                <label className="block text-gray-400 text-sm font-medium mb-2">Rating</label>
+                                <div className="flex flex-wrap gap-2">
+                                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
+                                        <button
+                                            key={num}
+                                            onClick={() => setRating(num)}
+                                            className={`
+                                                w-10 h-10 rounded-lg font-bold text-lg transition-all duration-200 transform hover:scale-110
+                                                ${rating === num
+                                                    ? 'bg-purple-600 text-white shadow-lg shadow-purple-600/40 ring-2 ring-purple-400 ring-offset-2 ring-offset-gray-900'
+                                                    : 'bg-black/40 text-gray-400 hover:bg-gray-700 hover:text-white border border-white/10'
+                                                }
+                                            `}
+                                        >
+                                            {num}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
 
-                <textarea
-                    placeholder="Your review..."
-                    value={comment}
-                    onChange={(e) => setComment(e.target.value)}
-                />
+                            <div>
+                                <label className="block text-gray-400 text-sm font-medium mb-2">Your Review</label>
+                                <textarea
+                                    placeholder="Share your thoughts about the movie..."
+                                    value={comment}
+                                    onChange={(e) => setComment(e.target.value)}
+                                    className="w-full bg-black/40 text-white border border-white/10 rounded-xl py-4 px-5 min-h-[120px] focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all placeholder-gray-500 resize-y"
+                                />
+                            </div>
 
-                <button onClick={handleSubmitReview}>
-                    Submit Review
-                </button>
+                            <button
+                                onClick={handleSubmitReview}
+                                className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold py-3 px-8 rounded-xl shadow-lg shadow-purple-900/30 transition-all transform hover:scale-[1.02] active:scale-[0.98] w-full md:w-auto"
+                            >
+                                Submit Review
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="text-center py-8">
+                            <p className="text-gray-400 text-lg mb-4">
+                                Want to share your thoughts?
+                            </p>
+                            <Link
+                                to="/login"
+                                className="inline-block bg-white/10 hover:bg-white/20 text-white font-semibold py-3 px-8 rounded-full transition-all border border-white/10 hover:border-white/30 backdrop-blur-md"
+                            >
+                                Login to write a review
+                            </Link>
+                        </div>
+                    )}
+                </div>
             </div>
 
 

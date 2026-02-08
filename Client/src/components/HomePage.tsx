@@ -310,12 +310,6 @@ function HeroSection({ items }: { items: Tmdb_info[] }) {
                             className="bg-white text-black hover:bg-gray-200 px-8 py-4 rounded-full font-bold flex items-center gap-2 transition-all duration-300 hover:scale-105 shadow-xl"
                         >
                             <Play className="w-5 h-5 fill-black" />
-                            Play Now
-                        </Link>
-                        <Link
-                            to={`/${featured.type}/${featured.id}-${createSlug(featured.title)}`}
-                            className="bg-gray-800/60 hover:bg-gray-700/80 text-white px-8 py-4 rounded-full font-bold backdrop-blur-md border border-white/10 transition-all duration-300 hover:scale-105"
-                        >
                             More Info
                         </Link>
                     </div>
