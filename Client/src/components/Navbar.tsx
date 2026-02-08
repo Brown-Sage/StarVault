@@ -57,7 +57,7 @@ export default function Navbar() {
         setShowResults(true);
 
         try {
-            const response = await fetch(`http://localhost:3001/api/search?query=${encodeURIComponent(query.trim())}`);
+            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/search?query=${encodeURIComponent(query.trim())}`);
             if (!response.ok) {
                 throw new Error('Search failed');
             }

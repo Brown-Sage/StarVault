@@ -59,7 +59,7 @@ export default function MovieDetails() {
                 if (!numericId || !type) {
                     throw new Error('Invalid movie ID or type');
                 }
-                const data = await fetchWithRetry<MovieDetails>(`http://localhost:3001/api/${type}/${numericId}`);
+                const data = await fetchWithRetry<MovieDetails>(`${import.meta.env.VITE_API_BASE_URL}/api/${type}/${numericId}`);
                 setMovie(data);
             } catch (err) {
                 setError(err instanceof Error ? err.message : 'An error occurred');

@@ -106,23 +106,23 @@ function MovieCard({ item }: { item: Tmdb_info }) {
 const categoryConfig: Record<string, { title: string; apiEndpoint: string }> = {
     'trending-now': {
         title: 'Trending Now',
-        apiEndpoint: 'http://localhost:3001/api/trending'
+        apiEndpoint: `${import.meta.env.VITE_API_BASE_URL}/api/trending`
     },
     'top-rated-movies': {
         title: 'Top Rated Movies',
-        apiEndpoint: 'http://localhost:3001/api/top-rated/movies'
+        apiEndpoint: `${import.meta.env.VITE_API_BASE_URL}/api/top-rated/movies`
     },
     'top-rated-tv-shows': {
         title: 'Top Rated TV Shows',
-        apiEndpoint: 'http://localhost:3001/api/top-rated/tv'
+        apiEndpoint: `${import.meta.env.VITE_API_BASE_URL}/api/top-rated/tv`
     },
     'popular-movies': {
         title: 'Popular Movies',
-        apiEndpoint: 'http://localhost:3001/api/popular/movies'
+        apiEndpoint: `${import.meta.env.VITE_API_BASE_URL}/api/popular/movies`
     },
     'popular-tv-shows': {
         title: 'Popular TV Shows',
-        apiEndpoint: 'http://localhost:3001/api/popular/tv'
+        apiEndpoint: `${import.meta.env.VITE_API_BASE_URL}/api/popular/tv`
     }
 };
 

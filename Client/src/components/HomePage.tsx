@@ -359,7 +359,7 @@ export function Trending() {
     useEffect(() => {
         const fetchTrending = async () => {
             try {
-                const data = await fetchWithRetry<Tmdb_info[]>('http://localhost:3001/api/trending');
+                const data = await fetchWithRetry<Tmdb_info[]>(`${import.meta.env.VITE_API_BASE_URL}/api/trending`);
                 setTrending(data);
             } catch (err) {
                 console.error("Failed to fetch trending:", err);
@@ -387,7 +387,7 @@ export function TopRatedMovies() {
             try {
                 setLoading(true);
                 setError(null);
-                const data = await fetchWithRetry<Tmdb_info[]>('http://localhost:3001/api/top-rated/movies');
+                const data = await fetchWithRetry<Tmdb_info[]>(`${import.meta.env.VITE_API_BASE_URL}/api/top-rated/movies`);
                 setTopRatedMovies(data);
             } catch (err) {
                 setError(err instanceof Error ? err.message : 'An error occurred');
@@ -412,7 +412,7 @@ export function TopRatedTV() {
             try {
                 setLoading(true);
                 setError(null);
-                const data = await fetchWithRetry<Tmdb_info[]>('http://localhost:3001/api/top-rated/tv');
+                const data = await fetchWithRetry<Tmdb_info[]>(`${import.meta.env.VITE_API_BASE_URL}/api/top-rated/tv`);
                 setTopRatedTV(data);
             } catch (err) {
                 setError(err instanceof Error ? err.message : 'An error occurred');
@@ -437,7 +437,7 @@ export function PopularMovies() {
             try {
                 setLoading(true);
                 setError(null);
-                const data = await fetchWithRetry<Tmdb_info[]>('http://localhost:3001/api/popular/movies');
+                const data = await fetchWithRetry<Tmdb_info[]>(`${import.meta.env.VITE_API_BASE_URL}/api/popular/movies`);
                 setPopularMovies(data);
             } catch (err) {
                 setError(err instanceof Error ? err.message : 'An error occurred');
@@ -462,7 +462,7 @@ export function PopularTV() {
             try {
                 setLoading(true);
                 setError(null);
-                const data = await fetchWithRetry<Tmdb_info[]>('http://localhost:3001/api/popular/tv');
+                const data = await fetchWithRetry<Tmdb_info[]>(`${import.meta.env.VITE_API_BASE_URL}/api/popular/tv`);
                 setPopularTV(data);
             } catch (err) {
                 setError(err instanceof Error ? err.message : 'An error occurred');

@@ -7,9 +7,10 @@ export const createReview = async (
     comment: string
 ) => {
     const token = localStorage.getItem("token");
+    const API = import.meta.env.VITE_API_BASE_URL;
 
     const res = await axios.post(
-        "http://localhost:3001/api/reviews",
+        `${API}/api/reviews`,
         { mediaId, mediaType, rating, comment },
         {
             headers: {
