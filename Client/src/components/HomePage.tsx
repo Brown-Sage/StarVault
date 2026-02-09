@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useEffect, useState, useRef } from 'react';
-import { ChevronLeft, ChevronRight, Star, Play } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Star, Play, TrendingUp } from 'lucide-react';
 
 interface Tmdb_info {
     id: number;
@@ -45,10 +45,10 @@ function SkeletonCard() {
     return (
         <div className="flex-shrink-0 w-[180px] sm:w-[200px] lg:w-[220px]">
             <div className="relative group">
-                <div className="aspect-[2/3] bg-gradient-to-br from-gray-700 to-gray-800 rounded-xl animate-pulse"></div>
+                <div className="aspect-[2/3] bg-gradient-to-br from-white/5 to-white/10 rounded-xl animate-pulse"></div>
                 <div className="mt-3 space-y-2">
-                    <div className="h-4 bg-gray-700 rounded animate-pulse w-3/4"></div>
-                    <div className="h-3 bg-gray-700 rounded animate-pulse w-1/2"></div>
+                    <div className="h-4 bg-white/10 rounded-lg animate-pulse w-3/4"></div>
+                    <div className="h-3 bg-white/8 rounded-lg animate-pulse w-1/2"></div>
                 </div>
             </div>
         </div>
@@ -102,11 +102,11 @@ function ContentRow({ title, items, loading, error }: ContentRowProps) {
 
     if (loading) {
         return (
-            <div className="mb-12">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-6 px-4 md:px-8">
+            <div className="mb-14">
+                <h2 className="text-2xl md:text-3xl font-bold text-white mb-6 px-4 md:px-10">
                     {title}
                 </h2>
-                <div className="relative px-4 md:px-8">
+                <div className="relative px-4 md:px-10">
                     <div className="flex gap-4 overflow-hidden">
                         {[...Array(6)].map((_, i) => <SkeletonCard key={i} />)}
                     </div>
@@ -117,9 +117,9 @@ function ContentRow({ title, items, loading, error }: ContentRowProps) {
 
     if (error) {
         return (
-            <div className="mb-12 px-4 md:px-8">
+            <div className="mb-14 px-4 md:px-10">
                 <h2 className="text-2xl md:text-3xl font-bold text-white mb-6">{title}</h2>
-                <div className="bg-red-500/10 border border-red-500/50 rounded-xl p-6 text-red-400">
+                <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-6 text-red-400">
                     Error loading content: {error}
                 </div>
             </div>
@@ -127,14 +127,14 @@ function ContentRow({ title, items, loading, error }: ContentRowProps) {
     }
 
     return (
-        <div className="mb-12 group/section">
-            <div className="flex items-center justify-between mb-6 px-4 md:px-8">
-                <h2 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+        <div className="mb-14 group/section">
+            <div className="flex items-center justify-between mb-6 px-4 md:px-10">
+                <h2 className="text-2xl md:text-3xl font-bold text-white">
                     {title}
                 </h2>
                 <Link
                     to={`/browse/${title.toLowerCase().replace(/\s+/g, '-')}`}
-                    className="text-sm text-purple-400 hover:text-purple-300 transition-colors flex items-center gap-1 group/link"
+                    className="text-sm text-purple-400 hover:text-purple-300 transition-colors flex items-center gap-1 group/link font-medium"
                 >
                     See All
                     <ChevronRight className="w-4 h-4 group-hover/link:translate-x-1 transition-transform" />
@@ -146,17 +146,17 @@ function ContentRow({ title, items, loading, error }: ContentRowProps) {
                 {canScrollLeft && (
                     <button
                         onClick={() => scroll('left')}
-                        className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-black/80 hover:bg-black/90 text-white p-3 rounded-full opacity-0 group-hover/scroll:opacity-100 transition-all duration-300 backdrop-blur-sm border border-white/10 hover:scale-110"
+                        className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-[#13101f]/90 hover:bg-purple-600 text-white p-3 rounded-full opacity-0 group-hover/scroll:opacity-100 transition-all duration-300 backdrop-blur-sm border border-white/15 hover:border-purple-500 hover:scale-110 shadow-xl shadow-black/40"
                         aria-label="Scroll left"
                     >
-                        <ChevronLeft className="w-6 h-6" />
+                        <ChevronLeft className="w-5 h-5" />
                     </button>
                 )}
 
                 {/* Scrollable Content */}
                 <div
                     ref={scrollContainerRef}
-                    className="flex gap-4 overflow-x-auto scrollbar-hide px-4 md:px-8 scroll-smooth"
+                    className="flex gap-4 overflow-x-auto scrollbar-hide px-4 md:px-10 scroll-smooth"
                     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                 >
                     {items.map((item) => (
@@ -168,12 +168,16 @@ function ContentRow({ title, items, loading, error }: ContentRowProps) {
                 {canScrollRight && (
                     <button
                         onClick={() => scroll('right')}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-black/80 hover:bg-black/90 text-white p-3 rounded-full opacity-0 group-hover/scroll:opacity-100 transition-all duration-300 backdrop-blur-sm border border-white/10 hover:scale-110"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-[#13101f]/90 hover:bg-purple-600 text-white p-3 rounded-full opacity-0 group-hover/scroll:opacity-100 transition-all duration-300 backdrop-blur-sm border border-white/15 hover:border-purple-500 hover:scale-110 shadow-xl shadow-black/40"
                         aria-label="Scroll right"
                     >
-                        <ChevronRight className="w-6 h-6" />
+                        <ChevronRight className="w-5 h-5" />
                     </button>
                 )}
+
+                {/* Fade edges */}
+                <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-[#0f0a1e] to-transparent z-[5]"></div>
+                <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-[#0f0a1e] to-transparent z-[5]"></div>
             </div>
         </div>
     );
@@ -186,7 +190,7 @@ function MovieCard({ item }: { item: Tmdb_info }) {
             <Link to={`/${item.type}/${item.id}-${createSlug(item.title)}`}>
                 <div className="relative group cursor-pointer">
                     {/* Poster Image */}
-                    <div className="relative aspect-[2/3] rounded-xl overflow-hidden bg-gray-800">
+                    <div className="relative aspect-[2/3] rounded-xl overflow-hidden bg-white/5 ring-1 ring-white/10 group-hover:ring-purple-500/40 transition-all duration-300">
                         <img
                             src={item.imageUrl}
                             alt={item.title}
@@ -199,19 +203,19 @@ function MovieCard({ item }: { item: Tmdb_info }) {
 
                         {/* Play Button on Hover */}
                         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
-                            <div className="bg-purple-600 hover:bg-purple-500 rounded-full p-4 transform scale-75 group-hover:scale-100 transition-transform duration-300 shadow-2xl">
+                            <div className="bg-purple-600 hover:bg-purple-500 rounded-full p-4 transform scale-75 group-hover:scale-100 transition-transform duration-300 shadow-2xl shadow-purple-900/50">
                                 <Play className="w-6 h-6 text-white fill-white" />
                             </div>
                         </div>
 
                         {/* Rating Badge */}
-                        <div className="absolute top-2 right-2 bg-black/80 backdrop-blur-sm px-2 py-1 rounded-lg flex items-center gap-1 border border-yellow-500/30">
+                        <div className="absolute top-2 right-2 bg-black/70 backdrop-blur-sm px-2 py-1 rounded-lg flex items-center gap-1 border border-yellow-500/30">
                             <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
                             <span className="text-xs font-bold text-white">{item.rating.toFixed(1)}</span>
                         </div>
 
                         {/* Type Badge */}
-                        <div className="absolute top-2 left-2 bg-purple-600/90 backdrop-blur-sm px-2 py-1 rounded-md">
+                        <div className="absolute top-2 left-2 bg-purple-600/80 backdrop-blur-sm px-2 py-1 rounded-md">
                             <span className="text-xs font-semibold text-white uppercase tracking-wide">
                                 {item.type}
                             </span>
@@ -223,7 +227,7 @@ function MovieCard({ item }: { item: Tmdb_info }) {
                         <h3 className="text-white font-semibold text-sm line-clamp-2 group-hover:text-purple-400 transition-colors">
                             {item.title}
                         </h3>
-                        <p className="text-gray-400 text-xs mt-1">
+                        <p className="text-gray-500 text-xs mt-1">
                             {item.releaseDate ? new Date(item.releaseDate).getFullYear() : 'N/A'}
                         </p>
                     </div>
@@ -242,7 +246,7 @@ function HeroSection({ items }: { items: Tmdb_info[] }) {
         if (items.length === 0) return;
         const interval = setInterval(() => {
             nextSlide();
-        }, 8000); // Change slide every 8 seconds
+        }, 8000);
         return () => clearInterval(interval);
     }, [currentIndex, items.length]);
 
@@ -265,7 +269,7 @@ function HeroSection({ items }: { items: Tmdb_info[] }) {
     const featured = items[currentIndex];
 
     return (
-        <div className="relative h-[85vh] min-h-[600px] mb-12 overflow-hidden group">
+        <div className="relative h-[85vh] min-h-[600px] mb-14 overflow-hidden group">
             {/* Background Image with Overlay */}
             <div className={`absolute inset-0 transition-opacity duration-1000 ${isTransitioning ? 'opacity-50' : 'opacity-100'}`}>
                 <img
@@ -273,42 +277,43 @@ function HeroSection({ items }: { items: Tmdb_info[] }) {
                     alt={featured.title}
                     className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-r from-black via-black/60 to-transparent"></div>
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0a0118] via-transparent to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-[#0f0a1e] via-[#0f0a1e]/70 to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0f0a1e] via-transparent to-[#0f0a1e]/30"></div>
             </div>
 
             {/* Content */}
-            <div className="relative h-full flex items-center px-4 md:px-8 lg:px-16 z-10">
+            <div className="relative h-full flex items-center px-4 md:px-10 lg:px-16 z-10">
                 <div className={`max-w-3xl space-y-6 transition-all duration-700 transform ${isTransitioning ? 'translate-y-10 opacity-0' : 'translate-y-0 opacity-100'}`}>
                     {/* Badge */}
-                    <div className="flex items-center gap-3">
-                        <span className="bg-purple-600 text-white px-4 py-1.5 rounded-full text-sm font-semibold uppercase tracking-wide shadow-lg shadow-purple-900/50">
+                    <div className="flex items-center gap-3 flex-wrap">
+                        <span className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-4 py-1.5 rounded-full text-sm font-semibold uppercase tracking-wide shadow-lg shadow-purple-900/50 flex items-center gap-1.5">
+                            <TrendingUp className="w-4 h-4" />
                             Trending Now
                         </span>
-                        <div className="flex items-center gap-2 bg-black/50 backdrop-blur-sm px-3 py-1.5 rounded-full border border-white/10">
+                        <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 py-1.5 rounded-full border border-white/15">
                             <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                            <span className="text-white font-bold">{Number(featured.rating).toFixed(1)}</span>
+                            <span className="text-white font-bold text-sm">{Number(featured.rating).toFixed(1)}</span>
                         </div>
-                        <div className="flex items-center gap-2 bg-black/50 backdrop-blur-sm px-3 py-1.5 rounded-full border border-white/10">
-                            <span className="text-gray-300 font-semibold uppercase text-xs">{featured.type}</span>
+                        <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 py-1.5 rounded-full border border-white/15">
+                            <span className="text-gray-200 font-semibold uppercase text-xs tracking-wide">{featured.type}</span>
                         </div>
                     </div>
 
                     {/* Title */}
-                    <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-white leading-tight tracking-tight drop-shadow-2xl">
+                    <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-white leading-[0.95] tracking-tight drop-shadow-2xl">
                         {featured.title}
                     </h1>
 
                     {/* Overview */}
-                    <p className="text-gray-300 text-lg md:text-xl line-clamp-3 max-w-2xl font-medium drop-shadow-md">
+                    <p className="text-gray-300 text-lg md:text-xl line-clamp-3 max-w-2xl font-medium leading-relaxed">
                         {featured.overview}
                     </p>
 
                     {/* Buttons */}
-                    <div className="flex flex-wrap gap-4 pt-4">
+                    <div className="flex flex-wrap gap-4 pt-2">
                         <Link
                             to={`/${featured.type}/${featured.id}-${createSlug(featured.title)}`}
-                            className="bg-white text-black hover:bg-gray-200 px-8 py-4 rounded-full font-bold flex items-center gap-2 transition-all duration-300 hover:scale-105 shadow-xl"
+                            className="bg-white text-black hover:bg-gray-100 px-8 py-3.5 rounded-full font-bold flex items-center gap-2 transition-all duration-300 hover:scale-105 shadow-xl text-sm"
                         >
                             <Play className="w-5 h-5 fill-black" />
                             More Info
@@ -320,29 +325,30 @@ function HeroSection({ items }: { items: Tmdb_info[] }) {
             {/* Navigation Arrows */}
             <button
                 onClick={prevSlide}
-                className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-black/30 hover:bg-black/60 text-white p-3 rounded-full backdrop-blur-sm border border-white/10 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110"
+                className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-white/10 hover:bg-white/20 text-white p-3 rounded-full backdrop-blur-sm border border-white/15 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110"
             >
-                <ChevronLeft className="w-8 h-8" />
+                <ChevronLeft className="w-7 h-7" />
             </button>
             <button
                 onClick={nextSlide}
-                className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-black/30 hover:bg-black/60 text-white p-3 rounded-full backdrop-blur-sm border border-white/10 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110"
+                className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-white/10 hover:bg-white/20 text-white p-3 rounded-full backdrop-blur-sm border border-white/15 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110"
             >
-                <ChevronRight className="w-8 h-8" />
+                <ChevronRight className="w-7 h-7" />
             </button>
 
             {/* Indicators */}
-            <div className="absolute bottom-8 right-8 z-20 flex gap-2">
+            <div className="absolute bottom-10 right-8 z-20 flex gap-2">
                 {items.slice(0, 10).map((_, index) => (
                     <button
                         key={index}
                         onClick={() => setCurrentIndex(index)}
-                        className={`h-1.5 rounded-full transition-all duration-300 ${index === currentIndex ? 'w-8 bg-white' : 'w-4 bg-white/30 hover:bg-white/50'}`}
+                        className={`h-1.5 rounded-full transition-all duration-500 ${index === currentIndex ? 'w-10 bg-purple-400' : 'w-4 bg-white/25 hover:bg-white/40'}`}
                     />
                 ))}
             </div>
+
             {/* Gradient Overlay Bottom */}
-            <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#0a0118] to-transparent z-0"></div>
+            <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-[#0f0a1e] to-transparent z-0"></div>
         </div>
     );
 }
@@ -364,7 +370,6 @@ export function Trending() {
         fetchTrending();
     }, []);
 
-    // Take top 5 items for the carousel
     const carouselItems = trending.slice(0, 10);
 
     return (
@@ -474,15 +479,18 @@ export function PopularTV() {
 
 export default function HomePage() {
     return (
-        <div className="min-h-screen bg-gradient-to-b from-[#0a0118] via-[#1a0a2e] to-[#0a0118]">
+        <div className="min-h-screen bg-gradient-to-b from-[#0f0a1e] via-[#1a1030] to-[#0f0a1e]">
             <Trending />
-            <TopRatedMovies />
-            <TopRatedTV />
-            <PopularMovies />
-            <PopularTV />
 
-            {/* Bottom Gradient */}
-            <div className="h-32 bg-gradient-to-t from-[#0a0118] to-transparent"></div>
+            <div className="relative">
+                <TopRatedMovies />
+                <TopRatedTV />
+                <PopularMovies />
+                <PopularTV />
+            </div>
+
+            {/* Footer gradient */}
+            <div className="h-24 bg-gradient-to-t from-[#0f0a1e] to-transparent"></div>
         </div>
     );
 }
