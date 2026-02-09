@@ -283,6 +283,123 @@ export const getPopularTV = async (req: Request, res: Response) => {
     }
 };
 
+export const getPopularAnime = async (req: Request, res: Response) => {
+    try {
+        if (!process.env.TMDB_API_KEY) {
+            throw new Error('TMDB API key is not set in environment variables');
+        }
+
+        console.log('Fetching popular anime from TMDB...');
+        const response = await axios.get<TMDBResponse>(`${TMDB_BASE_URL}/discover/tv`, {
+            params: {
+                api_key: process.env.TMDB_API_KEY,
+                language: 'en-US',
+                with_genres: '16',
+                with_origin_country: 'JP',
+                sort_by: 'popularity.desc',
+                page: req.query.page || 1
+            }
+        });
+
+        const popularAnime = response.data.results.map((item) => ({
+            id: item.id,
+            title: item.name,
+            type: 'tv',
+            rating: item.vote_average,
+            imageUrl: item.poster_path ? `${TMDB_IMAGE_BASE_URL}${item.poster_path}` : null,
+            overview: item.overview,
+            releaseDate: item.first_air_date
+        }));
+
+        res.json(popularAnime);
+    } catch (error) {
+        console.error('Error details:', error);
+        res.status(500).json({
+            error: 'Failed to fetch popular anime',
+            details: error instanceof Error ? error.message : 'Unknown error'
+        });
+    }
+};
+
+export const getTopRatedAnime = async (req: Request, res: Response) => {
+    try {
+        if (!process.env.TMDB_API_KEY) {
+            throw new Error('TMDB API key is not set in environment variables');
+        }
+
+        console.log('Fetching top-rated anime from TMDB...');
+        const response = await axios.get<TMDBResponse>(`${TMDB_BASE_URL}/discover/tv`, {
+            params: {
+                api_key: process.env.TMDB_API_KEY,
+                language: 'en-US',
+                with_genres: '16',
+                with_origin_country: 'JP',
+                sort_by: 'vote_average.desc',
+                'vote_count.gte': 200,
+                page: req.query.page || 1
+            }
+        });
+
+        const topRatedAnime = response.data.results.map((item) => ({
+            id: item.id,
+            title: item.name,
+            type: 'tv',
+            rating: item.vote_average,
+            imageUrl: item.poster_path ? `${TMDB_IMAGE_BASE_URL}${item.poster_path}` : null,
+            overview: item.overview,
+            releaseDate: item.first_air_date
+        }));
+
+        res.json(topRatedAnime);
+    } catch (error) {
+        console.error('Error details:', error);
+        res.status(500).json({
+            error: 'Failed to fetch top-rated anime',
+            details: error instanceof Error ? error.message : 'Unknown error'
+        });
+    }
+};
+
+export const getTrendingAnime = async (req: Request, res: Response) => {
+    try {
+        if (!process.env.TMDB_API_KEY) {
+            throw new Error('TMDB API key is not set in environment variables');
+        }
+
+        console.log('Fetching trending anime from TMDB...');
+        const response = await axios.get<TMDBResponse>(`${TMDB_BASE_URL}/discover/tv`, {
+            params: {
+                api_key: process.env.TMDB_API_KEY,
+                language: 'en-US',
+                with_genres: '16',
+                with_origin_country: 'JP',
+                sort_by: 'popularity.desc',
+                'vote_count.gte': 50,
+                page: req.query.page || 1
+            }
+        });
+
+        const trendingAnime = response.data.results.map((item) => ({
+            id: item.id,
+            title: item.name,
+            type: 'tv',
+            rating: item.vote_average,
+            imageUrl: item.poster_path ? `${TMDB_IMAGE_BASE_URL}${item.poster_path}` : null,
+            backdropUrl: item.backdrop_path ? `${TMDB_BACKDROP_BASE_URL}${item.backdrop_path}` : null,
+            overview: item.overview,
+            releaseDate: item.first_air_date
+        }));
+
+        res.json(trendingAnime);
+    } catch (error) {
+        console.error('Error details:', error);
+        res.status(500).json({
+            error: 'Failed to fetch trending anime',
+            details: error instanceof Error ? error.message : 'Unknown error'
+        });
+    }
+};
+
 export const getMovieDetails = async (req: Request, res: Response) => {
     try {
         if (!process.env.TMDB_API_KEY) {

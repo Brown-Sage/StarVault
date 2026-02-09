@@ -153,9 +153,9 @@ export default function Navbar() {
 
                 {/* Navigation Links — desktop */}
                 <ul className="hidden lg:flex gap-8 text-gray-300 font-medium text-sm">
-                    {['Movies', 'TV Shows', 'Anime'].map((item) => (
-                        <li key={item} className="hover:text-white cursor-pointer transition-colors relative group py-1">
-                            {item}
+                    {[{ label: 'Movies', path: '/category/movies' }, { label: 'TV Shows', path: '/category/tv-shows' }, { label: 'Anime', path: '/category/anime' }].map((item) => (
+                        <li key={item.label} className="hover:text-white cursor-pointer transition-colors relative group py-1" onClick={() => navigate(item.path)}>
+                            {item.label}
                             <span className="absolute -bottom-0.5 left-0 w-0 h-0.5 bg-gradient-to-r from-fuchsia-500 to-purple-600 transition-all duration-300 group-hover:w-full rounded-full"></span>
                         </li>
                     ))}
@@ -332,13 +332,13 @@ export default function Navbar() {
             {mobileMenuOpen && (
                 <div className="fixed inset-0 z-40 pt-20 bg-[#0d0a1a]/95 backdrop-blur-xl lg:hidden">
                     <ul className="flex flex-col items-center gap-6 py-8 text-gray-200 font-medium text-lg">
-                        {['Movies', 'TV Shows', 'Anime'].map((item) => (
+                        {[{ label: 'Movies', path: '/category/movies' }, { label: 'TV Shows', path: '/category/tv-shows' }, { label: 'Anime', path: '/category/anime' }].map((item) => (
                             <li
-                                key={item}
+                                key={item.label}
                                 className="hover:text-purple-400 cursor-pointer transition-colors"
-                                onClick={() => setMobileMenuOpen(false)}
+                                onClick={() => { navigate(item.path); setMobileMenuOpen(false); }}
                             >
-                                {item}
+                                {item.label}
                             </li>
                         ))}
                         {!isLoggedIn && (

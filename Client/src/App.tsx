@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
 import BrowseAll from './components/BrowseAll';
+import CategoryPage from './components/CategoryPage';
 import HomePage from "./components/HomePage";
 import MovieDetails from './components/MovieDetails';
 import Navbar from './components/Navbar';
@@ -18,6 +19,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/category/:category" element={<CategoryPage />} />
           <Route path="/browse/:category" element={<BrowseAll />} />
           <Route path="/:type/:id" element={<MovieDetails />} />
           <Route path="/my-reviews" element={<MyReviews />} />
@@ -28,4 +30,5 @@ function App() {
 }
 
 export default App;
+
 

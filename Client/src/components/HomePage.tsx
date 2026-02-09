@@ -240,27 +240,22 @@ function MovieCard({ item }: { item: Tmdb_info }) {
 // Hero Section Component with Carousel
 function HeroSection({ items }: { items: Tmdb_info[] }) {
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [isTransitioning, setIsTransitioning] = useState(false);
 
     useEffect(() => {
         if (items.length === 0) return;
         const interval = setInterval(() => {
-            nextSlide();
+            setCurrentIndex((prev) => (prev + 1) % items.length);
         }, 8000);
         return () => clearInterval(interval);
     }, [currentIndex, items.length]);
 
     const nextSlide = () => {
-        if (items.length === 0 || isTransitioning) return;
-        setIsTransitioning(true);
-        setTimeout(() => setIsTransitioning(false), 500);
+        if (items.length === 0) return;
         setCurrentIndex((prev) => (prev + 1) % items.length);
     };
 
     const prevSlide = () => {
-        if (items.length === 0 || isTransitioning) return;
-        setIsTransitioning(true);
-        setTimeout(() => setIsTransitioning(false), 500);
+        if (items.length === 0) return;
         setCurrentIndex((prev) => (prev - 1 + items.length) % items.length);
     };
 
@@ -271,7 +266,7 @@ function HeroSection({ items }: { items: Tmdb_info[] }) {
     return (
         <div className="relative h-[85vh] min-h-[600px] mb-14 overflow-hidden group">
             {/* Background Image with Overlay */}
-            <div className={`absolute inset-0 transition-opacity duration-1000 ${isTransitioning ? 'opacity-50' : 'opacity-100'}`}>
+            <div className="absolute inset-0 transition-opacity duration-700">
                 <img
                     src={featured.backdropUrl || featured.imageUrl}
                     alt={featured.title}
@@ -283,9 +278,12 @@ function HeroSection({ items }: { items: Tmdb_info[] }) {
 
             {/* Content */}
             <div className="relative h-full flex items-center px-4 md:px-10 lg:px-16 z-10">
-                <div className={`max-w-3xl space-y-6 transition-all duration-700 transform ${isTransitioning ? 'translate-y-10 opacity-0' : 'translate-y-0 opacity-100'}`}>
+                <div className="max-w-3xl space-y-6">
                     {/* Badge */}
                     <div className="flex items-center gap-3 flex-wrap">
+                        <span className="bg-white/10 backdrop-blur-sm text-white px-4 py-1.5 rounded-full text-sm font-black tracking-wide border border-white/15">
+                            #{currentIndex + 1}
+                        </span>
                         <span className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-4 py-1.5 rounded-full text-sm font-semibold uppercase tracking-wide shadow-lg shadow-purple-900/50 flex items-center gap-1.5">
                             <TrendingUp className="w-4 h-4" />
                             Trending Now
@@ -325,13 +323,13 @@ function HeroSection({ items }: { items: Tmdb_info[] }) {
             {/* Navigation Arrows */}
             <button
                 onClick={prevSlide}
-                className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-white/10 hover:bg-white/20 text-white p-3 rounded-full backdrop-blur-sm border border-white/15 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110"
+                className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-[#13101f]/90 hover:bg-purple-600 text-white p-3 rounded-full backdrop-blur-sm border border-white/15 hover:border-purple-500 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110 shadow-xl shadow-black/40"
             >
                 <ChevronLeft className="w-7 h-7" />
             </button>
             <button
                 onClick={nextSlide}
-                className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-white/10 hover:bg-white/20 text-white p-3 rounded-full backdrop-blur-sm border border-white/15 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110"
+                className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-[#13101f]/90 hover:bg-purple-600 text-white p-3 rounded-full backdrop-blur-sm border border-white/15 hover:border-purple-500 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110 shadow-xl shadow-black/40"
             >
                 <ChevronRight className="w-7 h-7" />
             </button>
