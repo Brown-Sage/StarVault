@@ -25,23 +25,33 @@ export default function Navbar() {
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
-        const email = localStorage.getItem("userEmail");
+        const checkAuth = () => {
+            const token = localStorage.getItem("token");
+            const email = localStorage.getItem("userEmail");
 
-        if (token) {
-            setIsLoggedIn(true);
-            if (email) {
-                setAvatarUrl(`https://www.gravatar.com/avatar/${md5(email.trim().toLowerCase())}?d=identicon`);
+            if (token) {
+                setIsLoggedIn(true);
+                if (email) {
+                    setAvatarUrl(`https://www.gravatar.com/avatar/${md5(email.trim().toLowerCase())}?d=identicon`);
+                }
+            } else {
+                setIsLoggedIn(false);
+                setAvatarUrl(null);
             }
-        } else {
-            setIsLoggedIn(false);
-            setAvatarUrl(null);
-        }
+        };
+
+        checkAuth(); // Initial check
+        window.addEventListener("auth-change", checkAuth);
+
+        return () => {
+            window.removeEventListener("auth-change", checkAuth);
+        };
     }, []);
 
     const handleLogout = () => {
         localStorage.removeItem("token");
         localStorage.removeItem("userEmail");
+        window.dispatchEvent(new Event("auth-change"));
         setIsLoggedIn(false);
         setAvatarUrl(null);
         navigate('/');

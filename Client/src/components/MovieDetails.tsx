@@ -153,7 +153,15 @@ export default function MovieDetails() {
     const [comment, setComment] = useState("");
     const [replyingTo, setReplyingTo] = useState<string | null>(null);
     const [replyComment, setReplyComment] = useState("");
-    const token = localStorage.getItem("token");
+    const [token, setToken] = useState(localStorage.getItem("token"));
+
+    useEffect(() => {
+        const handleAuthChange = () => {
+            setToken(localStorage.getItem("token"));
+        };
+        window.addEventListener("auth-change", handleAuthChange);
+        return () => window.removeEventListener("auth-change", handleAuthChange);
+    }, []);
 
 
 
@@ -258,12 +266,10 @@ export default function MovieDetails() {
     const handleReplySubmit = async (reviewId: string) => {
         if (!replyComment.trim()) return;
         try {
-            await addReply(reviewId, replyComment);
+            const updatedReview = await addReply(reviewId, replyComment);
+            setReviews(prevReviews => prevReviews.map(r => r._id === reviewId ? updatedReview : r));
             setReplyComment("");
             setReplyingTo(null);
-            if (id) {
-                getReviews(id.toString()).then(setReviews);
-            }
         } catch (error) {
             console.error("Error submitting reply:", error);
             alert("Failed to submit reply");

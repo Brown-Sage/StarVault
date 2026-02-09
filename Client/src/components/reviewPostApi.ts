@@ -13,7 +13,7 @@ export interface Review {
     mediaId: string;
     mediaType: string;
     mediaTitle: string;
-    mediaPoster: string;
+    mediaPoster: string; 
     mediaReleaseDate: string;
     rating: number;
     comment: string;
