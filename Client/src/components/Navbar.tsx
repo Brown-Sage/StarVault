@@ -1,7 +1,7 @@
 import SearchIcon from '@mui/icons-material/Search'
 import { useState, useRef, useEffect } from 'react';
 import type { FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import md5 from 'md5';
 import { Star, Menu, X, LogOut, BookOpen } from 'lucide-react';
 
@@ -26,6 +26,7 @@ export default function Navbar() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [userMenuOpen, setUserMenuOpen] = useState(false);
     const navigate = useNavigate();
+    const location = useLocation();
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const userMenuRef = useRef<HTMLDivElement>(null);
 
@@ -152,11 +153,10 @@ export default function Navbar() {
                 </div>
 
                 {/* Navigation Links — desktop */}
-                <ul className="hidden lg:flex gap-8 text-gray-300 font-medium text-sm">
+                <ul className="hidden lg:flex gap-8 text-gray-400 font-medium text-sm">
                     {[{ label: 'Movies', path: '/category/movies' }, { label: 'TV Shows', path: '/category/tv-shows' }, { label: 'Anime', path: '/category/anime' }].map((item) => (
-                        <li key={item.label} className="hover:text-white cursor-pointer transition-colors relative group py-1" onClick={() => navigate(item.path)}>
+                        <li key={item.label} className={`cursor-pointer transition-colors duration-200 py-1 ${location.pathname === item.path ? 'text-purple-400 font-semibold' : 'hover:text-purple-400'}`} onClick={() => navigate(item.path)}>
                             {item.label}
-                            <span className="absolute -bottom-0.5 left-0 w-0 h-0.5 bg-gradient-to-r from-fuchsia-500 to-purple-600 transition-all duration-300 group-hover:w-full rounded-full"></span>
                         </li>
                     ))}
                 </ul>
@@ -335,7 +335,7 @@ export default function Navbar() {
                         {[{ label: 'Movies', path: '/category/movies' }, { label: 'TV Shows', path: '/category/tv-shows' }, { label: 'Anime', path: '/category/anime' }].map((item) => (
                             <li
                                 key={item.label}
-                                className="hover:text-purple-400 cursor-pointer transition-colors"
+                                className={`cursor-pointer transition-colors ${location.pathname === item.path ? 'text-purple-400 font-semibold' : 'hover:text-purple-400'}`}
                                 onClick={() => { navigate(item.path); setMobileMenuOpen(false); }}
                             >
                                 {item.label}

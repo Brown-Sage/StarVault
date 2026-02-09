@@ -306,7 +306,7 @@ export default function MovieDetails() {
                 </div>
             )}
             <div className="w-full bg-gradient-to-r from-[#2d1a1a] to-[#1a1a2d] pb-8">
-                <div className="container mx-auto px-4 pt-10 flex flex-col md:flex-row gap-10">
+                <div className="container mx-auto px-4 pt-20 flex flex-col md:flex-row gap-10">
                     {/* Poster */}
                     <div className="flex-shrink-0 w-full md:w-80 lg:w-96">
                         <img
