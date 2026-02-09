@@ -46,6 +46,7 @@ export const getReviews = async (req: Request, res: Response) => {
 
         const reviews = await Review.find({ mediaId })
             .populate('user', 'email')
+            .populate('replies.user', 'email')
             .sort({ createdAt: -1 });
 
         return res.json(reviews);
@@ -83,6 +84,42 @@ export const updateReview = async (req: Request, res: Response) => {
         }
 
         return res.json(review);
+    } catch (error) {
+        return res.status(500).json({ message: 'Server error', error });
+    }
+};
+
+export const addReply = async (req: Request, res: Response) => {
+    try {
+        const userId = req.user;
+        const { reviewId } = req.params;
+        const { comment } = req.body;
+
+        if (!comment) {
+            return res.status(400).json({ message: 'Comment is required' });
+        }
+
+        const review = await Review.findById(reviewId);
+
+        if (!review) {
+            return res.status(404).json({ message: 'Review not found' });
+        }
+
+        const newReply = {
+            user: userId,
+            comment,
+            createdAt: new Date()
+        };
+
+        // @ts-ignore
+        review.replies.push(newReply);
+        await review.save();
+
+        const updatedReview = await Review.findById(reviewId)
+            .populate('user', 'email')
+            .populate('replies.user', 'email');
+
+        return res.json(updatedReview);
     } catch (error) {
         return res.status(500).json({ message: 'Server error', error });
     }

@@ -1,5 +1,13 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
+// Define Reply Interface
+export interface IReply {
+    _id?: mongoose.Types.ObjectId;
+    user: mongoose.Types.ObjectId;
+    comment: string;
+    createdAt: Date;
+}
+
 export interface IReview extends Document {
     user: mongoose.Types.ObjectId;
     mediaId: string;
@@ -9,9 +17,26 @@ export interface IReview extends Document {
     mediaReleaseDate?: string;
     rating: number;
     comment: string;
+    replies: IReply[];
     createdAt: Date;
     updatedAt: Date;
 }
+
+const replySchema = new Schema({
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
+    comment: {
+        type: String,
+        required: true
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    }
+});
 
 const reviewSchema: Schema = new Schema({
     user: {
@@ -50,6 +75,7 @@ const reviewSchema: Schema = new Schema({
         type: String,
         required: true,
     },
+    replies: [replySchema]
 }, {
     timestamps: true,
 });

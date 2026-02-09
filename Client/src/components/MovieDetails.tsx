@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import { fetchWithRetry } from './HomePage';
 import { getReviews } from './reviewApi';
-import { createReview, getUserReview, updateReview, type Review } from "./reviewPostApi";
+import { createReview, getUserReview, updateReview, addReply, type Review } from "./reviewPostApi";
 
 
 interface CastMember {
@@ -151,6 +151,8 @@ export default function MovieDetails() {
     const [isEditing, setIsEditing] = useState(false);
     const [rating, setRating] = useState(10);
     const [comment, setComment] = useState("");
+    const [replyingTo, setReplyingTo] = useState<string | null>(null);
+    const [replyComment, setReplyComment] = useState("");
     const token = localStorage.getItem("token");
 
 
@@ -250,6 +252,21 @@ export default function MovieDetails() {
         } catch (error) {
             console.error("Error submitting review:", error);
             alert("Failed to submit review");
+        }
+    };
+
+    const handleReplySubmit = async (reviewId: string) => {
+        if (!replyComment.trim()) return;
+        try {
+            await addReply(reviewId, replyComment);
+            setReplyComment("");
+            setReplyingTo(null);
+            if (id) {
+                getReviews(id.toString()).then(setReviews);
+            }
+        } catch (error) {
+            console.error("Error submitting reply:", error);
+            alert("Failed to submit reply");
         }
     };
 
@@ -402,7 +419,7 @@ export default function MovieDetails() {
                                         </div>
                                     </div>
                                 </div>
-                                <p className="text-gray-300 text-lg italic mb-6">"{userReview.comment}"</p>
+                                <p className="text-gray-300 text-lg italic mb-6 break-words">"{userReview.comment}"</p>
                                 <button
                                     onClick={() => {
                                         setIsEditing(true);
@@ -495,18 +512,92 @@ export default function MovieDetails() {
                 {reviews.length === 0 ? (
                     <p className="text-gray-400">No reviews yet</p>
                 ) : (
-                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    <div className="space-y-6">
                         {reviews.map((review: any) => (
-                            <div key={review._id} className="bg-gray-800 p-4 rounded-xl shadow-md border border-gray-700">
-                                <div className="flex items-center justify-between mb-2">
-                                    <span className="font-bold text-blue-400 text-sm truncate">
-                                        {review.user?.email || 'Unknown User'}
-                                    </span>
-                                    <span className="bg-green-600 text-white text-xs px-2 py-1 rounded font-bold">
-                                        {review.rating}/10
-                                    </span>
+                            <div key={review._id} className="bg-gray-800 p-6 rounded-xl shadow-md border border-gray-700">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-white font-bold text-lg">
+                                            {(review.user?.email?.[0] || 'U').toUpperCase()}
+                                        </div>
+                                        <div>
+                                            <div className="font-bold text-white text-sm">
+                                                {review.user?.email?.split('@')[0] || 'Unknown User'}
+                                            </div>
+                                            <div className="text-gray-400 text-xs">
+                                                {new Date(review.createdAt).toLocaleDateString()}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-1 bg-yellow-500/10 px-2 py-1 rounded border border-yellow-500/20">
+                                        <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
+                                        <span className="text-yellow-500 font-bold text-sm">{review.rating}</span>
+                                    </div>
                                 </div>
-                                <p className="text-gray-300 text-sm italic">"{review.comment}"</p>
+                                <p className="text-gray-300 text-base mb-4 leading-relaxed break-words">{review.comment}</p>
+
+                                {/* Replies Section */}
+                                <div className="mt-4 pl-4 border-l-2 border-gray-700 space-y-4">
+                                    {review.replies?.map((reply: any) => (
+                                        <div key={reply._id} className="bg-gray-900/50 p-3 rounded-lg border border-gray-700/50">
+                                            <div className="flex items-center gap-2 mb-1">
+                                                <span className="font-bold text-purple-400 text-xs">
+                                                    {reply.user?.email?.split('@')[0] || 'Unknown User'}
+                                                </span>
+                                                <span className="text-gray-500 text-xs">
+                                                    • {new Date(reply.createdAt).toLocaleDateString()}
+                                                </span>
+                                            </div>
+                                            <p className="text-gray-300 text-sm break-words">{reply.comment}</p>
+                                        </div>
+                                    ))}
+
+                                    {/* Reply Form */}
+                                    {token && (
+                                        <div className="mt-3">
+                                            {replyingTo === review._id ? (
+                                                <div className="flex flex-col gap-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                                                    <textarea
+                                                        value={replyComment}
+                                                        onChange={(e) => setReplyComment(e.target.value)}
+                                                        placeholder="Add a reply..."
+                                                        className="w-full bg-gray-900 text-white rounded-lg p-3 text-sm outline-none border border-gray-700 focus:border-purple-500 resize-none h-24"
+                                                        autoFocus
+                                                    />
+                                                    <div className="flex justify-end gap-2">
+                                                        <button
+                                                            onClick={() => {
+                                                                setReplyingTo(null);
+                                                                setReplyComment("");
+                                                            }}
+                                                            className="px-3 py-1.5 text-gray-400 hover:text-white text-sm font-medium transition-colors"
+                                                        >
+                                                            Cancel
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleReplySubmit(review._id)}
+                                                            className="px-4 py-1.5 bg-purple-600 hover:bg-purple-500 text-white text-sm font-bold rounded-lg transition-colors"
+                                                            disabled={!replyComment.trim()}
+                                                        >
+                                                            Reply
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <button
+                                                    onClick={() => {
+                                                        setReplyingTo(review._id);
+                                                        setReplyComment("");
+                                                    }}
+                                                    className="text-gray-400 hover:text-white text-sm font-semibold flex items-center gap-1 transition-colors"
+                                                >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-message-square"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
+                                                    Reply
+                                                </button>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         ))}
                     </div>

@@ -1,5 +1,12 @@
 import axios from "axios";
 
+export interface Reply {
+    _id: string;
+    user: any;
+    comment: string;
+    createdAt: string;
+}
+
 export interface Review {
     _id: string;
     user: any;
@@ -10,6 +17,7 @@ export interface Review {
     mediaReleaseDate: string;
     rating: number;
     comment: string;
+    replies?: Reply[];
     createdAt?: string;
     updatedAt?: string;
 }
@@ -71,6 +79,23 @@ export const updateReview = async (reviewId: string, rating: number, comment: st
     const res = await axios.put<Review>(
         `${API}/api/reviews/${reviewId}`,
         { rating, comment },
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }
+    );
+
+    return res.data;
+};
+
+export const addReply = async (reviewId: string, comment: string): Promise<Review> => {
+    const token = localStorage.getItem("token");
+    const API = import.meta.env.VITE_API_BASE_URL;
+
+    const res = await axios.post<Review>(
+        `${API}/api/reviews/${reviewId}/reply`,
+        { comment },
         {
             headers: {
                 Authorization: `Bearer ${token}`,
