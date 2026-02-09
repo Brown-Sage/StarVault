@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { Star } from 'lucide-react';
 import { fetchWithRetry } from './HomePage';
 import { getReviews } from './reviewApi';
-import { createReview } from "./reviewPostApi";
+import { createReview, getUserReview, updateReview, type Review } from "./reviewPostApi";
 
 
 interface CastMember {
@@ -47,6 +47,8 @@ export default function MovieDetails() {
 
     const [showTrailer, setShowTrailer] = useState(false);
     const [reviews, setReviews] = useState<any[]>([]);
+    const [userReview, setUserReview] = useState<Review | null>(null);
+    const [isEditing, setIsEditing] = useState(false);
     const [rating, setRating] = useState(10);
     const [comment, setComment] = useState("");
     const token = localStorage.getItem("token");
@@ -73,8 +75,22 @@ export default function MovieDetails() {
         if (id && type) {
             fetchMovieDetails();
             getReviews(id.toString()).then(setReviews);
+
+            if (token) {
+                getUserReview(id.toString()).then(review => {
+                    if (review) {
+                        setUserReview(review);
+                        setRating(review.rating);
+                        setComment(review.comment);
+                    } else {
+                        setUserReview(null);
+                        setRating(10);
+                        setComment("");
+                    }
+                });
+            }
         }
-    }, [id, type]);
+    }, [id, type, token]);
 
     if (loading) {
         return (
@@ -105,19 +121,36 @@ export default function MovieDetails() {
             alert("Cannot post review: Missing movie details");
             return;
         }
-        await createReview(
-            id,
-            type,
-            movie.title,
-            movie.imageUrl,
-            movie.releaseDate,
-            rating,
-            comment
-        );
-        alert("Review posted");
-        setComment("");
-        // Refresh reviews
-        getReviews(id.toString()).then(setReviews);
+
+        try {
+            if (userReview) {
+                // Update existing review
+                const updated = await updateReview(userReview._id, rating, comment);
+                setUserReview(updated);
+                setIsEditing(false);
+                alert("Review updated");
+            } else {
+                // Create new review
+                await createReview(
+                    id,
+                    type,
+                    movie.title,
+                    movie.imageUrl,
+                    movie.releaseDate,
+                    rating,
+                    comment
+                );
+                // Fetch the new review to update state
+                const newReview = await getUserReview(id.toString());
+                setUserReview(newReview);
+                alert("Review posted");
+            }
+            // Refresh reviews list
+            getReviews(id.toString()).then(setReviews);
+        } catch (error) {
+            console.error("Error submitting review:", error);
+            alert("Failed to submit review");
+        }
     };
 
 
@@ -278,45 +311,87 @@ export default function MovieDetails() {
                     </h3>
 
                     {token ? (
-                        <div className="space-y-6">
-                            <div>
-                                <label className="block text-gray-400 text-sm font-medium mb-2">Rating</label>
-                                <div className="flex flex-wrap gap-2">
-                                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
+                        userReview && !isEditing ? (
+                            <div className="bg-gray-800 p-6 rounded-xl border border-white/10">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h4 className="text-xl font-bold text-white">Your Review</h4>
+                                    <div className="flex items-center gap-2">
+                                        <div className="flex items-center gap-1 bg-yellow-500/10 px-3 py-1 rounded-full border border-yellow-500/20">
+                                            <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
+                                            <span className="font-bold text-yellow-500">{userReview.rating}/10</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p className="text-gray-300 text-lg italic mb-6">"{userReview.comment}"</p>
+                                <button
+                                    onClick={() => {
+                                        setIsEditing(true);
+                                        setRating(userReview.rating);
+                                        setComment(userReview.comment);
+                                    }}
+                                    className="px-6 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-semibold transition-colors"
+                                >
+                                    Edit Review
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="space-y-6">
+                                <div>
+                                    <label className="block text-gray-400 text-sm font-medium mb-2">Rating</label>
+                                    <div className="flex flex-wrap gap-2">
+                                        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
+                                            <button
+                                                key={num}
+                                                onClick={() => setRating(num)}
+                                                className={`
+                                                    w-10 h-10 rounded-lg font-bold text-lg transition-all duration-200 transform hover:scale-110
+                                                    ${rating === num
+                                                        ? 'bg-purple-600 text-white shadow-lg shadow-purple-600/40 ring-2 ring-purple-400 ring-offset-2 ring-offset-gray-900'
+                                                        : 'bg-black/40 text-gray-400 hover:bg-gray-700 hover:text-white border border-white/10'
+                                                    }
+                                                `}
+                                            >
+                                                {num}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-gray-400 text-sm font-medium mb-2">Your Review</label>
+                                    <textarea
+                                        placeholder="Share your thoughts about the movie..."
+                                        value={comment}
+                                        onChange={(e) => setComment(e.target.value)}
+                                        className="w-full bg-black/40 text-white border border-white/10 rounded-xl py-4 px-5 min-h-[120px] focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all placeholder-gray-500 resize-y"
+                                    />
+                                </div>
+
+                                <div className="flex gap-4">
+                                    <button
+                                        onClick={handleSubmitReview}
+                                        className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold py-3 px-8 rounded-xl shadow-lg shadow-purple-900/30 transition-all transform hover:scale-[1.02] active:scale-[0.98] w-full md:w-auto"
+                                    >
+                                        {isEditing ? 'Update Review' : 'Submit Review'}
+                                    </button>
+
+                                    {isEditing && (
                                         <button
-                                            key={num}
-                                            onClick={() => setRating(num)}
-                                            className={`
-                                                w-10 h-10 rounded-lg font-bold text-lg transition-all duration-200 transform hover:scale-110
-                                                ${rating === num
-                                                    ? 'bg-purple-600 text-white shadow-lg shadow-purple-600/40 ring-2 ring-purple-400 ring-offset-2 ring-offset-gray-900'
-                                                    : 'bg-black/40 text-gray-400 hover:bg-gray-700 hover:text-white border border-white/10'
+                                            onClick={() => {
+                                                setIsEditing(false);
+                                                if (userReview) {
+                                                    setRating(userReview.rating);
+                                                    setComment(userReview.comment);
                                                 }
-                                            `}
+                                            }}
+                                            className="bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 px-8 rounded-xl transition-all w-full md:w-auto"
                                         >
-                                            {num}
+                                            Cancel
                                         </button>
-                                    ))}
+                                    )}
                                 </div>
                             </div>
-
-                            <div>
-                                <label className="block text-gray-400 text-sm font-medium mb-2">Your Review</label>
-                                <textarea
-                                    placeholder="Share your thoughts about the movie..."
-                                    value={comment}
-                                    onChange={(e) => setComment(e.target.value)}
-                                    className="w-full bg-black/40 text-white border border-white/10 rounded-xl py-4 px-5 min-h-[120px] focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all placeholder-gray-500 resize-y"
-                                />
-                            </div>
-
-                            <button
-                                onClick={handleSubmitReview}
-                                className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold py-3 px-8 rounded-xl shadow-lg shadow-purple-900/30 transition-all transform hover:scale-[1.02] active:scale-[0.98] w-full md:w-auto"
-                            >
-                                Submit Review
-                            </button>
-                        </div>
+                        )
                     ) : (
                         <div className="text-center py-8">
                             <p className="text-gray-400 text-lg mb-4">

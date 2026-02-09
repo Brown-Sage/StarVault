@@ -53,3 +53,37 @@ export const getReviews = async (req: Request, res: Response) => {
         return res.status(500).json({ message: 'Server error', error });
     }
 };
+
+export const getUserReviewForMedia = async (req: Request, res: Response) => {
+    try {
+        const userId = req.user;
+        const { mediaId } = req.params;
+
+        const review = await Review.findOne({ user: userId, mediaId });
+        return res.json(review);
+    } catch (error) {
+        return res.status(500).json({ message: 'Server error', error });
+    }
+};
+
+export const updateReview = async (req: Request, res: Response) => {
+    try {
+        const userId = req.user;
+        const { reviewId } = req.params;
+        const { rating, comment } = req.body;
+
+        const review = await Review.findOneAndUpdate(
+            { _id: reviewId, user: userId },
+            { rating, comment },
+            { new: true }
+        );
+
+        if (!review) {
+            return res.status(404).json({ message: 'Review not found or unauthorized' });
+        }
+
+        return res.json(review);
+    } catch (error) {
+        return res.status(500).json({ message: 'Server error', error });
+    }
+};

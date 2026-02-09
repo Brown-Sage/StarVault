@@ -54,4 +54,6 @@ const reviewSchema: Schema = new Schema({
     timestamps: true,
 });
 
+reviewSchema.index({ user: 1, mediaId: 1 }, { unique: true });
+
 export default mongoose.model<IReview>('Review', reviewSchema);
