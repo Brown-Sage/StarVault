@@ -7,6 +7,7 @@ dotenv.config();
 // TMDB API configuration
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
+const TMDB_BACKDROP_BASE_URL = 'https://image.tmdb.org/t/p/w1280';
 
 // Cache configuration
 interface CacheItem {
@@ -41,6 +42,7 @@ interface TMDBResponse {
         media_type?: string;
         vote_average: number;
         poster_path: string | null;
+        backdrop_path: string | null;
         overview: string;
         release_date?: string;
         first_air_date?: string;
@@ -55,6 +57,7 @@ function formatTMDBResponse(details: any, type: 'movie' | 'tv') {
         type,
         rating: details.vote_average,
         imageUrl: details.poster_path ? `${TMDB_IMAGE_BASE_URL}${details.poster_path}` : null,
+        backdropUrl: details.backdrop_path ? `${TMDB_BACKDROP_BASE_URL}${details.backdrop_path}` : null,
         overview: details.overview,
         releaseDate: type === 'movie' ? details.release_date : details.first_air_date,
         genres: details.genres?.map((genre: { name: string }) => genre.name),
@@ -102,6 +105,7 @@ export const getTrending = async (req: Request, res: Response) => {
             type: item.media_type,
             rating: item.vote_average,
             imageUrl: item.poster_path ? `${TMDB_IMAGE_BASE_URL}${item.poster_path}` : null,
+            backdropUrl: item.backdrop_path ? `${TMDB_BACKDROP_BASE_URL}${item.backdrop_path}` : null,
             overview: item.overview,
             releaseDate: item.release_date || item.first_air_date
         }));

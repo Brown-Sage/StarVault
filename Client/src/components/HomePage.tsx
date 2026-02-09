@@ -8,6 +8,7 @@ interface Tmdb_info {
     type: string;
     rating: number;
     imageUrl: string;
+    backdropUrl?: string;
     overview: string;
     releaseDate: string;
 }
@@ -268,7 +269,7 @@ function HeroSection({ items }: { items: Tmdb_info[] }) {
             {/* Background Image with Overlay */}
             <div className={`absolute inset-0 transition-opacity duration-1000 ${isTransitioning ? 'opacity-50' : 'opacity-100'}`}>
                 <img
-                    src={featured.imageUrl}
+                    src={featured.backdropUrl || featured.imageUrl}
                     alt={featured.title}
                     className="w-full h-full object-cover"
                 />

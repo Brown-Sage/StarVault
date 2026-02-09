@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Star } from 'lucide-react';
+import { Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import { fetchWithRetry } from './HomePage';
 import { getReviews } from './reviewApi';
 import { createReview, getUserReview, updateReview, type Review } from "./reviewPostApi";
@@ -37,6 +37,106 @@ interface MovieDetails {
     cast?: CastMember[];
     crew?: Crew;
     trailerKey?: string;
+}
+
+function CastSection({ cast }: { cast: CastMember[] }) {
+    const scrollContainerRef = useRef<HTMLDivElement>(null);
+    const [canScrollLeft, setCanScrollLeft] = useState(false);
+    const [canScrollRight, setCanScrollRight] = useState(true);
+
+    const checkScroll = () => {
+        if (scrollContainerRef.current) {
+            const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
+            setCanScrollLeft(scrollLeft > 0);
+            setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
+        }
+    };
+
+    useEffect(() => {
+        checkScroll();
+        const container = scrollContainerRef.current;
+        if (container) {
+            container.addEventListener('scroll', checkScroll);
+            return () => container.removeEventListener('scroll', checkScroll);
+        }
+    }, [cast]);
+
+    const scroll = (direction: 'left' | 'right') => {
+        if (scrollContainerRef.current) {
+            const scrollAmount = 300;
+            const newScrollLeft = direction === 'left'
+                ? scrollContainerRef.current.scrollLeft - scrollAmount
+                : scrollContainerRef.current.scrollLeft + scrollAmount;
+
+            scrollContainerRef.current.scrollTo({
+                left: newScrollLeft,
+                behavior: 'smooth'
+            });
+        }
+    };
+
+    return (
+        <div className="container mx-auto px-4 py-8 group/section">
+            <h2 className="text-2xl font-bold mb-6 text-white flex items-center gap-3">
+                <span className="bg-purple-600 w-1 h-8 rounded-full"></span>
+                Top Billed Cast
+            </h2>
+            <div className="relative group/scroll">
+                {/* Left Arrow */}
+                {canScrollLeft && (
+                    <button
+                        onClick={() => scroll('left')}
+                        className="absolute -left-2 top-1/2 -translate-y-1/2 z-10 bg-black/80 hover:bg-black/90 text-white p-2 rounded-full opacity-0 group-hover/scroll:opacity-100 transition-all duration-300 backdrop-blur-sm border border-white/10 hover:scale-110 shadow-lg"
+                        aria-label="Scroll left"
+                    >
+                        <ChevronLeft className="w-5 h-5" />
+                    </button>
+                )}
+
+                <div
+                    ref={scrollContainerRef}
+                    className="flex overflow-x-auto gap-4 pb-4 scrollbar-hide px-1"
+                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                >
+                    {cast.map((artist) => (
+                        <div
+                            key={artist.id}
+                            className="flex-shrink-0 w-36 md:w-44 group cursor-pointer"
+                        >
+                            <div className="relative aspect-[2/3] rounded-xl overflow-hidden mb-3 bg-gray-800 shadow-lg border border-white/5">
+                                <img
+                                    src={artist.profileUrl || 'https://via.placeholder.com/300x450?text=No+Image'}
+                                    alt={artist.name}
+                                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                    loading="lazy"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                            </div>
+                            <div className="px-1">
+                                <h3 className="text-white font-bold text-sm md:text-base leading-tight truncate group-hover:text-purple-400 transition-colors">
+                                    {artist.name}
+                                </h3>
+                                <p className="text-gray-400 text-xs md:text-sm truncate mt-1">
+                                    {artist.character}
+                                </p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                {/* Right Arrow */}
+                {canScrollRight && (
+                    <button
+                        onClick={() => scroll('right')}
+                        className="absolute -right-2 top-1/2 -translate-y-1/2 z-10 bg-black/80 hover:bg-black/90 text-white p-2 rounded-full opacity-0 group-hover/scroll:opacity-100 transition-all duration-300 backdrop-blur-sm border border-white/10 hover:scale-110 shadow-lg"
+                        aria-label="Scroll right"
+                    >
+                        <ChevronRight className="w-5 h-5" />
+                    </button>
+                )}
+            </div>
+        </div>
+    );
 }
 
 export default function MovieDetails() {
@@ -280,27 +380,7 @@ export default function MovieDetails() {
                 </div>
             </div>
             {/* Cast Section */}
-            {movie.cast && movie.cast.length > 0 && (
-                <div className="container mx-auto px-4 py-8">
-                    <h2 className="text-2xl font-bold mb-4 text-white">Top Billed Cast</h2>
-                    <div className="flex overflow-x-auto gap-4 pb-2">
-                        {movie.cast.map((artist) => (
-                            <div
-                                key={artist.id}
-                                className="flex-shrink-0 w-40 bg-white dark:bg-gray-800 rounded-xl shadow-md p-2 text-center"
-                            >
-                                <img
-                                    src={artist.profileUrl || 'https://via.placeholder.com/150x225?text=No+Image'}
-                                    alt={artist.name}
-                                    className="w-32 h-40 object-cover rounded-lg mx-auto mb-2 bg-gray-200"
-                                />
-                                <div className="font-bold text-black dark:text-white text-md truncate">{artist.name}</div>
-                                <div className="text-gray-600 dark:text-gray-300 text-sm truncate">{artist.character}</div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            )}
+            {movie.cast && movie.cast.length > 0 && <CastSection cast={movie.cast} />}
 
             {/* Write Review Section */}
             <div className="container mx-auto px-4 py-8">
