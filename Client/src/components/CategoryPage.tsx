@@ -26,15 +26,15 @@ const categoryConfigs: Record<string, {
     label: string;
     icon: typeof Film;
     heroEndpoint: string;
-    sections: { title: string; endpoint: string }[];
+    sections: { title: string; endpoint: string; browseSlug: string }[];
 }> = {
     movies: {
         label: 'Movies',
         icon: Film,
         heroEndpoint: `${import.meta.env.VITE_API_BASE_URL}/api/trending`,
         sections: [
-            { title: 'Popular Movies', endpoint: `${import.meta.env.VITE_API_BASE_URL}/api/popular/movies` },
-            { title: 'Top Rated Movies', endpoint: `${import.meta.env.VITE_API_BASE_URL}/api/top-rated/movies` },
+            { title: 'Popular Movies', endpoint: `${import.meta.env.VITE_API_BASE_URL}/api/popular/movies`, browseSlug: 'popular-movies' },
+            { title: 'Top Rated Movies', endpoint: `${import.meta.env.VITE_API_BASE_URL}/api/top-rated/movies`, browseSlug: 'top-rated-movies' },
         ],
     },
     'tv-shows': {
@@ -42,8 +42,8 @@ const categoryConfigs: Record<string, {
         icon: Tv,
         heroEndpoint: `${import.meta.env.VITE_API_BASE_URL}/api/trending`,
         sections: [
-            { title: 'Popular TV Shows', endpoint: `${import.meta.env.VITE_API_BASE_URL}/api/popular/tv` },
-            { title: 'Top Rated TV Shows', endpoint: `${import.meta.env.VITE_API_BASE_URL}/api/top-rated/tv` },
+            { title: 'Popular TV Shows', endpoint: `${import.meta.env.VITE_API_BASE_URL}/api/popular/tv`, browseSlug: 'popular-tv-shows' },
+            { title: 'Top Rated TV Shows', endpoint: `${import.meta.env.VITE_API_BASE_URL}/api/top-rated/tv`, browseSlug: 'top-rated-tv-shows' },
         ],
     },
     anime: {
@@ -51,8 +51,8 @@ const categoryConfigs: Record<string, {
         icon: Sparkles,
         heroEndpoint: `${import.meta.env.VITE_API_BASE_URL}/api/anime/trending`,
         sections: [
-            { title: 'Popular Anime', endpoint: `${import.meta.env.VITE_API_BASE_URL}/api/anime/popular` },
-            { title: 'Top Rated Anime', endpoint: `${import.meta.env.VITE_API_BASE_URL}/api/anime/top-rated` },
+            { title: 'Popular Anime', endpoint: `${import.meta.env.VITE_API_BASE_URL}/api/anime/popular`, browseSlug: 'popular-anime' },
+            { title: 'Top Rated Anime', endpoint: `${import.meta.env.VITE_API_BASE_URL}/api/anime/top-rated`, browseSlug: 'top-rated-anime' },
         ],
     },
 };
@@ -111,7 +111,7 @@ function MovieCard({ item }: { item: Tmdb_info }) {
 }
 
 // Content Row with horizontal scroll
-function ContentRow({ title, endpoint }: { title: string; endpoint: string }) {
+function ContentRow({ title, endpoint, browseSlug }: { title: string; endpoint: string; browseSlug: string }) {
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const [items, setItems] = useState<Tmdb_info[]>([]);
     const [loading, setLoading] = useState(true);
@@ -177,6 +177,13 @@ function ContentRow({ title, endpoint }: { title: string; endpoint: string }) {
         <div className="mb-14 group/section">
             <div className="flex items-center justify-between mb-6 px-4 md:px-10">
                 <h2 className="text-2xl md:text-3xl font-bold text-white">{title}</h2>
+                <Link
+                    to={`/browse/${browseSlug}`}
+                    className="text-sm text-purple-400 hover:text-purple-300 transition-colors flex items-center gap-1 group/link font-medium"
+                >
+                    See All
+                    <ChevronRight className="w-4 h-4 group-hover/link:translate-x-1 transition-transform" />
+                </Link>
             </div>
 
             <div className="relative group/scroll">
@@ -367,7 +374,7 @@ export default function CategoryPage() {
 
             <div className="relative">
                 {config.sections.map((section) => (
-                    <ContentRow key={section.title} title={section.title} endpoint={section.endpoint} />
+                    <ContentRow key={section.title} title={section.title} endpoint={section.endpoint} browseSlug={section.browseSlug} />
                 ))}
             </div>
 

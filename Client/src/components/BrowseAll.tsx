@@ -123,6 +123,14 @@ const categoryConfig: Record<string, { title: string; apiEndpoint: string }> = {
     'popular-tv-shows': {
         title: 'Popular TV Shows',
         apiEndpoint: `${import.meta.env.VITE_API_BASE_URL}/api/popular/tv`
+    },
+    'popular-anime': {
+        title: 'Popular Anime',
+        apiEndpoint: `${import.meta.env.VITE_API_BASE_URL}/api/anime/popular`
+    },
+    'top-rated-anime': {
+        title: 'Top Rated Anime',
+        apiEndpoint: `${import.meta.env.VITE_API_BASE_URL}/api/anime/top-rated`
     }
 };
 
