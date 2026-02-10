@@ -9,7 +9,8 @@ import {
     getTopRatedAnime,
     getTrendingAnime,
     getMovieDetails,
-    getTVDetails
+    getTVDetails,
+    getPersonDetails
 } from '../controllers/mediaController';
 
 const router = Router();
@@ -24,6 +25,7 @@ router.get('/anime/popular', getPopularAnime);
 router.get('/anime/top-rated', getTopRatedAnime);
 router.get('/movie/:id', getMovieDetails);
 router.get('/tv/:id', getTVDetails);
+router.get('/person/:id', getPersonDetails);
 
 export default router;
 

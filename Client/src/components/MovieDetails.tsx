@@ -99,9 +99,10 @@ function CastSection({ cast }: { cast: CastMember[] }) {
                     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                 >
                     {cast.map((artist) => (
-                        <div
+                        <Link
                             key={artist.id}
-                            className="flex-shrink-0 w-36 md:w-44 group cursor-pointer"
+                            to={`/person/${artist.id}-${artist.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}`}
+                            className="flex-shrink-0 w-36 md:w-44 group"
                         >
                             <div className="relative aspect-[2/3] rounded-xl overflow-hidden mb-3 bg-gray-800 shadow-lg border border-white/5">
                                 <img
@@ -120,7 +121,7 @@ function CastSection({ cast }: { cast: CastMember[] }) {
                                     {artist.character}
                                 </p>
                             </div>
-                        </div>
+                        </Link>
                     ))}
                 </div>
 

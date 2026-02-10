@@ -7,6 +7,7 @@ import MovieDetails from './components/MovieDetails';
 import Navbar from './components/Navbar';
 import Login from './components/Login';
 import Register from './components/Register';
+import CastDetails from './components/CastDetails';
 
 import MyReviews from './pages/MyReviews';
 
@@ -21,6 +22,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/category/:category" element={<CategoryPage />} />
           <Route path="/browse/:category" element={<BrowseAll />} />
+          <Route path="/person/:id" element={<CastDetails />} />
           <Route path="/:type/:id" element={<MovieDetails />} />
           <Route path="/my-reviews" element={<MyReviews />} />
         </Routes>

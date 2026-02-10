@@ -503,3 +503,76 @@ export const getTVDetails = async (req: Request, res: Response) => {
         });
     }
 };
+
+export const getPersonDetails = async (req: Request, res: Response) => {
+    try {
+        if (!process.env.TMDB_API_KEY) {
+            throw new Error('TMDB API key is not set in environment variables');
+        }
+
+        const { id } = req.params;
+        const cacheKey = `person-${id}`;
+        const cachedData = getCachedData(cacheKey);
+
+        if (cachedData) {
+            return res.json(cachedData);
+        }
+
+        // Fetch person details and combined credits in parallel
+        const [personRes, creditsRes] = await Promise.all([
+            axios.get(`${TMDB_BASE_URL}/person/${id}`, {
+                params: {
+                    api_key: process.env.TMDB_API_KEY,
+                    language: 'en-US'
+                }
+            }),
+            axios.get(`${TMDB_BASE_URL}/person/${id}/combined_credits`, {
+                params: {
+                    api_key: process.env.TMDB_API_KEY,
+                    language: 'en-US'
+                }
+            })
+        ]);
+
+        const person = personRes.data;
+
+        // Build filmography from combined credits, sorted by popularity
+        const filmography = creditsRes.data.cast
+            .filter((item: any) => item.poster_path) // only items with posters
+            .sort((a: any, b: any) => b.popularity - a.popularity)
+            .slice(0, 50)
+            .map((item: any) => ({
+                id: item.id,
+                title: item.title || item.name,
+                type: item.media_type === 'movie' ? 'movie' : 'tv',
+                character: item.character || '',
+                rating: item.vote_average,
+                imageUrl: item.poster_path ? `${TMDB_IMAGE_BASE_URL}${item.poster_path}` : null,
+                releaseDate: item.release_date || item.first_air_date || ''
+            }));
+
+        const result = {
+            id: person.id,
+            name: person.name,
+            biography: person.biography || '',
+            birthday: person.birthday,
+            deathday: person.deathday,
+            placeOfBirth: person.place_of_birth,
+            profileUrl: person.profile_path ? `${TMDB_IMAGE_BASE_URL}${person.profile_path}` : null,
+            knownFor: person.known_for_department,
+            gender: person.gender, // 1=Female, 2=Male, 3=Non-binary
+            homepage: person.homepage,
+            alsoKnownAs: person.also_known_as || [],
+            filmography
+        };
+
+        setCachedData(cacheKey, result);
+        res.json(result);
+    } catch (error) {
+        console.error('Error fetching person details:', error);
+        res.status(500).json({
+            error: 'Failed to fetch person details',
+            details: error instanceof Error ? error.message : 'Unknown error'
+        });
+    }
+};
