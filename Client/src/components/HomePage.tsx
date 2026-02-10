@@ -354,6 +354,7 @@ function HeroSection({ items }: { items: Tmdb_info[] }) {
 // Main Section Components
 export function Trending() {
     const [trending, setTrending] = useState<Tmdb_info[]>([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchTrending = async () => {
@@ -362,6 +363,8 @@ export function Trending() {
                 setTrending(data);
             } catch (err) {
                 console.error("Failed to fetch trending:", err);
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -369,6 +372,27 @@ export function Trending() {
     }, []);
 
     const carouselItems = trending.slice(0, 10);
+
+    if (loading || carouselItems.length === 0) {
+        return (
+            <div className="relative h-[85vh] min-h-[600px] mb-14 overflow-hidden bg-gradient-to-b from-[#1a1030] to-[#0f0a1e]">
+                <div className="absolute inset-0 flex items-center px-4 md:px-10 lg:px-16">
+                    <div className="max-w-3xl w-full space-y-6">
+                        <div className="flex items-center gap-3">
+                            <div className="h-8 w-16 bg-white/10 rounded-full animate-pulse"></div>
+                            <div className="h-8 w-36 bg-purple-600/30 rounded-full animate-pulse"></div>
+                        </div>
+                        <div className="h-16 md:h-24 bg-white/10 rounded-xl animate-pulse w-3/4"></div>
+                        <div className="space-y-3 max-w-2xl">
+                            <div className="h-5 bg-white/8 rounded-lg animate-pulse w-full"></div>
+                            <div className="h-5 bg-white/8 rounded-lg animate-pulse w-5/6"></div>
+                        </div>
+                        <div className="h-12 w-40 bg-white/10 rounded-full animate-pulse"></div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <HeroSection items={carouselItems} />
