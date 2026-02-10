@@ -78,7 +78,7 @@ function CastSection({ cast }: { cast: CastMember[] }) {
     return (
         <div className="container mx-auto px-4 py-8 group/section">
             <h2 className="text-2xl font-bold mb-6 text-white flex items-center gap-3">
-                <span className="bg-purple-600 w-1 h-8 rounded-full"></span>
+                <span className="bg-emerald-600 w-1 h-8 rounded-full"></span>
                 Top Billed Cast
             </h2>
             <div className="relative group/scroll">
@@ -114,7 +114,7 @@ function CastSection({ cast }: { cast: CastMember[] }) {
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                             </div>
                             <div className="px-1">
-                                <h3 className="text-white font-bold text-sm md:text-base leading-tight truncate group-hover:text-purple-400 transition-colors">
+                                <h3 className="text-white font-bold text-sm md:text-base leading-tight truncate group-hover:text-emerald-400 transition-colors">
                                     {artist.name}
                                 </h3>
                                 <p className="text-gray-400 text-xs md:text-sm truncate mt-1">
@@ -205,15 +205,15 @@ export default function MovieDetails() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gray-900 flex justify-center items-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+            <div className="min-h-screen bg-gradient-to-b from-[#081a0b] via-[#0e1f10] to-[#081a0b] flex justify-center items-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
             </div>
         );
     }
 
     if (error || !movie) {
         return (
-            <div className="min-h-screen bg-gray-900 flex justify-center items-center">
+            <div className="min-h-screen bg-gradient-to-b from-[#081a0b] via-[#0e1f10] to-[#081a0b] flex justify-center items-center">
                 <div className="text-red-500 text-xl">{error || 'Movie not found'}</div>
             </div>
         );
@@ -279,7 +279,7 @@ export default function MovieDetails() {
 
 
     return (
-        <div className="min-h-screen bg-gray-900 text-white">
+        <div className="min-h-screen bg-gradient-to-b from-[#081a0b] via-[#0e1f10] to-[#081a0b] text-white">
             {/* Trailer Modal */}
             {showTrailer && movie.trailerKey && (
                 <div className="fixed inset-0 z-50 flex flex-col items-center justify-start">
@@ -306,7 +306,7 @@ export default function MovieDetails() {
                     </div>
                 </div>
             )}
-            <div className="w-full bg-gradient-to-r from-[#2d1a1a] to-[#1a1a2d] pb-8">
+            <div className="w-full bg-gradient-to-r from-[#1a2d1a] to-[#0e1f10] pb-8">
                 <div className="container mx-auto px-4 pt-20 flex flex-col md:flex-row gap-10">
                     {/* Poster */}
                     <div className="flex-shrink-0 w-full md:w-80 lg:w-96">
@@ -367,7 +367,7 @@ export default function MovieDetails() {
                                     className="group flex items-center gap-3 bg-white hover:bg-gray-200 text-black px-6 py-2.5 rounded-full font-bold shadow-lg shadow-white/10 transition-all duration-300 hover:scale-105 active:scale-95"
                                     onClick={() => setShowTrailer(true)}
                                 >
-                                    <div className="w-6 h-6 bg-black rounded-full flex items-center justify-center group-hover:bg-purple-600 transition-colors">
+                                    <div className="w-6 h-6 bg-black rounded-full flex items-center justify-center group-hover:bg-emerald-600 transition-colors">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3 text-white ml-0.5">
                                             <path d="M5.25 5.25v13.5l13.5-6.75-13.5-6.75z" />
                                         </svg>
@@ -410,7 +410,7 @@ export default function MovieDetails() {
             <div className="container mx-auto px-4 py-8">
                 <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6 md:p-8 border border-white/10 shadow-xl">
                     <h3 className="text-2xl font-bold mb-6 text-white flex items-center gap-2">
-                        <span className="bg-purple-600 w-1 h-8 rounded-full"></span>
+                        <span className="bg-emerald-600 w-1 h-8 rounded-full"></span>
                         Write a Review
                     </h3>
 
@@ -450,7 +450,7 @@ export default function MovieDetails() {
                                                 className={`
                                                     w-10 h-10 rounded-lg font-bold text-lg transition-all duration-200 transform hover:scale-110
                                                     ${rating === num
-                                                        ? 'bg-purple-600 text-white shadow-lg shadow-purple-600/40 ring-2 ring-purple-400 ring-offset-2 ring-offset-gray-900'
+                                                        ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/40 ring-2 ring-emerald-400 ring-offset-2 ring-offset-gray-900'
                                                         : 'bg-black/40 text-gray-400 hover:bg-gray-700 hover:text-white border border-white/10'
                                                     }
                                                 `}
@@ -467,14 +467,14 @@ export default function MovieDetails() {
                                         placeholder="Share your thoughts about the movie..."
                                         value={comment}
                                         onChange={(e) => setComment(e.target.value)}
-                                        className="w-full bg-black/40 text-white border border-white/10 rounded-xl py-4 px-5 min-h-[120px] focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all placeholder-gray-500 resize-y"
+                                        className="w-full bg-black/40 text-white border border-white/10 rounded-xl py-4 px-5 min-h-[120px] focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all placeholder-gray-500 resize-y"
                                     />
                                 </div>
 
                                 <div className="flex gap-4">
                                     <button
                                         onClick={handleSubmitReview}
-                                        className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold py-3 px-8 rounded-xl shadow-lg shadow-purple-900/30 transition-all transform hover:scale-[1.02] active:scale-[0.98] w-full md:w-auto"
+                                        className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold py-3 px-8 rounded-xl shadow-lg shadow-emerald-900/30 transition-all transform hover:scale-[1.02] active:scale-[0.98] w-full md:w-auto"
                                     >
                                         {isEditing ? 'Update Review' : 'Submit Review'}
                                     </button>
@@ -524,7 +524,7 @@ export default function MovieDetails() {
                             <div key={review._id} className="bg-gray-800 p-6 rounded-xl shadow-md border border-gray-700">
                                 <div className="flex items-center justify-between mb-4">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-white font-bold text-lg">
+                                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-bold text-lg">
                                             {(review.user?.email?.[0] || 'U').toUpperCase()}
                                         </div>
                                         <div>
@@ -548,7 +548,7 @@ export default function MovieDetails() {
                                     {review.replies?.map((reply: any) => (
                                         <div key={reply._id} className="bg-gray-900/50 p-3 rounded-lg border border-gray-700/50">
                                             <div className="flex items-center gap-2 mb-1">
-                                                <span className="font-bold text-purple-400 text-xs">
+                                                <span className="font-bold text-emerald-400 text-xs">
                                                     {reply.user?.email?.split('@')[0] || 'Unknown User'}
                                                 </span>
                                                 <span className="text-gray-500 text-xs">
@@ -568,7 +568,7 @@ export default function MovieDetails() {
                                                         value={replyComment}
                                                         onChange={(e) => setReplyComment(e.target.value)}
                                                         placeholder="Add a reply..."
-                                                        className="w-full bg-gray-900 text-white rounded-lg p-3 text-sm outline-none border border-gray-700 focus:border-purple-500 resize-none h-24"
+                                                        className="w-full bg-gray-900 text-white rounded-lg p-3 text-sm outline-none border border-gray-700 focus:border-emerald-500 resize-none h-24"
                                                         autoFocus
                                                     />
                                                     <div className="flex justify-end gap-2">
@@ -583,7 +583,7 @@ export default function MovieDetails() {
                                                         </button>
                                                         <button
                                                             onClick={() => handleReplySubmit(review._id)}
-                                                            className="px-4 py-1.5 bg-purple-600 hover:bg-purple-500 text-white text-sm font-bold rounded-lg transition-colors"
+                                                            className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold rounded-lg transition-colors"
                                                             disabled={!replyComment.trim()}
                                                         >
                                                             Reply

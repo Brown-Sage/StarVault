@@ -56,7 +56,7 @@ function calculateAge(birthday: string | null, deathday: string | null): number 
 // Skeleton for the whole page
 function PersonSkeleton() {
     return (
-        <div className="min-h-screen bg-gradient-to-b from-[#0f0a1e] via-[#1a1030] to-[#0f0a1e] pt-24 animate-pulse">
+        <div className="min-h-screen bg-gradient-to-b from-[#081a0b] via-[#0e1f10] to-[#081a0b] pt-24 animate-pulse">
             <div className="container mx-auto px-4 md:px-8 lg:px-16">
                 <div className="flex flex-col md:flex-row gap-10">
                     {/* Profile image skeleton */}
@@ -67,7 +67,7 @@ function PersonSkeleton() {
                     <div className="flex-1 space-y-6">
                         <div className="h-10 bg-white/10 rounded-xl w-2/3"></div>
                         <div className="flex gap-3">
-                            <div className="h-8 w-28 bg-purple-600/30 rounded-full"></div>
+                            <div className="h-8 w-28 bg-emerald-600/30 rounded-full"></div>
                             <div className="h-8 w-36 bg-white/10 rounded-full"></div>
                         </div>
                         <div className="grid grid-cols-2 gap-4 max-w-md">
@@ -138,11 +138,11 @@ export default function CastDetails() {
 
     if (error || !person) {
         return (
-            <div className="min-h-screen bg-gradient-to-b from-[#0f0a1e] via-[#1a1030] to-[#0f0a1e] pt-24 flex items-center justify-center">
+            <div className="min-h-screen bg-gradient-to-b from-[#081a0b] via-[#0e1f10] to-[#081a0b] pt-24 flex items-center justify-center">
                 <div className="text-center space-y-4">
                     <p className="text-red-400 text-xl font-semibold">Something went wrong</p>
                     <p className="text-gray-500">{error || 'Person not found'}</p>
-                    <Link to="/" className="inline-flex items-center gap-2 text-purple-400 hover:text-purple-300 transition-colors mt-4">
+                    <Link to="/" className="inline-flex items-center gap-2 text-emerald-400 hover:text-emerald-300 transition-colors mt-4">
                         <ArrowLeft className="w-4 h-4" /> Back to Home
                     </Link>
                 </div>
@@ -157,13 +157,13 @@ export default function CastDetails() {
         : person.biography.slice(0, 600) + '...';
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-[#0f0a1e] via-[#1a1030] to-[#0f0a1e] pt-24 pb-16">
+        <div className="min-h-screen bg-gradient-to-b from-[#081a0b] via-[#0e1f10] to-[#081a0b] pt-24 pb-16">
             <div className="container mx-auto px-4 md:px-8 lg:px-16">
 
                 {/* Back button */}
                 <button
                     onClick={() => window.history.back()}
-                    className="flex items-center gap-2 text-gray-400 hover:text-purple-400 transition-colors mb-8 group"
+                    className="flex items-center gap-2 text-gray-400 hover:text-emerald-400 transition-colors mb-8 group"
                 >
                     <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                     <span className="text-sm font-medium">Go Back</span>
@@ -174,8 +174,8 @@ export default function CastDetails() {
                     {/* Profile Photo */}
                     <div className="flex-shrink-0 mx-auto md:mx-0">
                         <div className="relative w-[260px] sm:w-[280px] group">
-                            <div className="absolute -inset-1 bg-gradient-to-br from-purple-600/40 via-indigo-500/20 to-fuchsia-500/40 rounded-2xl blur-lg opacity-60 group-hover:opacity-80 transition-opacity duration-500"></div>
-                            <div className="relative aspect-[2/3] rounded-2xl overflow-hidden ring-1 ring-white/15 shadow-2xl shadow-purple-950/50">
+                            <div className="absolute -inset-1 bg-gradient-to-br from-emerald-600/40 via-teal-500/20 to-lime-500/40 rounded-2xl blur-lg opacity-60 group-hover:opacity-80 transition-opacity duration-500"></div>
+                            <div className="relative aspect-[2/3] rounded-2xl overflow-hidden ring-1 ring-white/15 shadow-2xl shadow-emerald-950/50">
                                 {person.profileUrl ? (
                                     <img
                                         src={person.profileUrl}
@@ -183,8 +183,8 @@ export default function CastDetails() {
                                         className="w-full h-full object-cover"
                                     />
                                 ) : (
-                                    <div className="w-full h-full bg-gradient-to-br from-purple-900/40 to-indigo-900/40 flex items-center justify-center">
-                                        <span className="text-6xl text-purple-300/40 font-black">{person.name.charAt(0)}</span>
+                                    <div className="w-full h-full bg-gradient-to-br from-emerald-900/40 to-teal-900/40 flex items-center justify-center">
+                                        <span className="text-6xl text-emerald-300/40 font-black">{person.name.charAt(0)}</span>
                                     </div>
                                 )}
                             </div>
@@ -201,7 +201,7 @@ export default function CastDetails() {
                         {/* Badges */}
                         <div className="flex flex-wrap items-center gap-3 mb-8">
                             {person.knownFor && (
-                                <span className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-4 py-1.5 rounded-full text-sm font-semibold shadow-lg shadow-purple-900/50 flex items-center gap-1.5">
+                                <span className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-4 py-1.5 rounded-full text-sm font-semibold shadow-lg shadow-emerald-900/50 flex items-center gap-1.5">
                                     <Briefcase className="w-3.5 h-3.5" />
                                     {person.knownFor}
                                 </span>
@@ -217,7 +217,7 @@ export default function CastDetails() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-lg mb-8">
                             {person.birthday && (
                                 <div className="bg-white/5 border border-white/8 rounded-xl px-4 py-3 flex items-center gap-3">
-                                    <Cake className="w-4 h-4 text-purple-400 flex-shrink-0" />
+                                    <Cake className="w-4 h-4 text-emerald-400 flex-shrink-0" />
                                     <div>
                                         <p className="text-gray-500 text-xs font-medium uppercase tracking-wide">Born</p>
                                         <p className="text-gray-200 text-sm font-semibold">
@@ -245,7 +245,7 @@ export default function CastDetails() {
                             )}
                             {person.placeOfBirth && (
                                 <div className="bg-white/5 border border-white/8 rounded-xl px-4 py-3 flex items-center gap-3">
-                                    <MapPin className="w-4 h-4 text-purple-400 flex-shrink-0" />
+                                    <MapPin className="w-4 h-4 text-emerald-400 flex-shrink-0" />
                                     <div>
                                         <p className="text-gray-500 text-xs font-medium uppercase tracking-wide">Birthplace</p>
                                         <p className="text-gray-200 text-sm font-semibold leading-tight">{person.placeOfBirth}</p>
@@ -272,7 +272,7 @@ export default function CastDetails() {
                         {person.biography && (
                             <div>
                                 <h2 className="text-xl font-bold text-white mb-3 flex items-center gap-2">
-                                    <span className="bg-purple-600 w-1 h-6 rounded-full"></span>
+                                    <span className="bg-emerald-600 w-1 h-6 rounded-full"></span>
                                     Biography
                                 </h2>
                                 <p className="text-gray-300 leading-relaxed whitespace-pre-line text-sm md:text-base">
@@ -281,7 +281,7 @@ export default function CastDetails() {
                                 {bioNeedsCollapse && (
                                     <button
                                         onClick={() => setBioExpanded(!bioExpanded)}
-                                        className="flex items-center gap-1 text-purple-400 hover:text-purple-300 transition-colors mt-3 text-sm font-medium"
+                                        className="flex items-center gap-1 text-emerald-400 hover:text-emerald-300 transition-colors mt-3 text-sm font-medium"
                                     >
                                         {bioExpanded ? (
                                             <>Read Less <ChevronUp className="w-4 h-4" /></>
@@ -299,7 +299,7 @@ export default function CastDetails() {
                 {person.filmography.length > 0 && (
                     <div className="mt-16">
                         <h2 className="text-2xl md:text-3xl font-bold text-white mb-8 flex items-center gap-3">
-                            <span className="bg-purple-600 w-1 h-8 rounded-full"></span>
+                            <span className="bg-emerald-600 w-1 h-8 rounded-full"></span>
                             Known For
                         </h2>
                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-5">
@@ -309,7 +309,7 @@ export default function CastDetails() {
                                     to={`/${item.type}/${item.id}-${createSlug(item.title)}`}
                                     className="group"
                                 >
-                                    <div className="relative aspect-[2/3] rounded-xl overflow-hidden bg-white/5 ring-1 ring-white/10 group-hover:ring-purple-500/40 transition-all duration-300 shadow-lg">
+                                    <div className="relative aspect-[2/3] rounded-xl overflow-hidden bg-white/5 ring-1 ring-white/10 group-hover:ring-emerald-500/40 transition-all duration-300 shadow-lg">
                                         {item.imageUrl ? (
                                             <img
                                                 src={item.imageUrl}
@@ -328,7 +328,7 @@ export default function CastDetails() {
 
                                         {/* Play button */}
                                         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
-                                            <div className="bg-purple-600 hover:bg-purple-500 rounded-full p-3 transform scale-75 group-hover:scale-100 transition-transform duration-300 shadow-2xl shadow-purple-900/50">
+                                            <div className="bg-emerald-600 hover:bg-emerald-500 rounded-full p-3 transform scale-75 group-hover:scale-100 transition-transform duration-300 shadow-2xl shadow-emerald-900/50">
                                                 <Play className="w-5 h-5 text-white fill-white" />
                                             </div>
                                         </div>
@@ -342,7 +342,7 @@ export default function CastDetails() {
                                         )}
 
                                         {/* Type badge */}
-                                        <div className="absolute top-2 left-2 bg-purple-600/80 backdrop-blur-sm px-2 py-0.5 rounded-md">
+                                        <div className="absolute top-2 left-2 bg-emerald-600/80 backdrop-blur-sm px-2 py-0.5 rounded-md">
                                             <span className="text-xs font-semibold text-white uppercase tracking-wide">
                                                 {item.type}
                                             </span>
@@ -350,7 +350,7 @@ export default function CastDetails() {
                                     </div>
 
                                     <div className="mt-3 px-0.5">
-                                        <h3 className="text-white font-semibold text-sm line-clamp-2 group-hover:text-purple-400 transition-colors">
+                                        <h3 className="text-white font-semibold text-sm line-clamp-2 group-hover:text-emerald-400 transition-colors">
                                             {item.title}
                                         </h3>
                                         {item.character && (
@@ -369,7 +369,7 @@ export default function CastDetails() {
                 )}
 
                 {/* Footer gradient */}
-                <div className="h-16 bg-gradient-to-t from-[#0f0a1e] to-transparent mt-8"></div>
+                <div className="h-16 bg-gradient-to-t from-[#081a0b] to-transparent mt-8"></div>
             </div>
         </div>
     );

@@ -141,13 +141,13 @@ export default function Navbar() {
     return (
         <>
             <nav className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-5 md:px-10 py-3 transition-all duration-500 ${scrolled
-                ? 'bg-[#0d0a1a]/90 backdrop-blur-2xl border-b border-white/10 shadow-lg shadow-purple-950/20'
+                ? 'bg-[#0a160c]/90 backdrop-blur-2xl border-b border-white/10 shadow-lg shadow-emerald-950/20'
                 : 'bg-transparent border-b border-transparent'
                 }`}>
                 {/* Logo */}
                 <div className="flex items-center cursor-pointer group" onClick={() => navigate('/')}>
-                    <Star className="h-7 w-7 fill-purple-400 text-purple-400 mr-2 group-hover:rotate-[20deg] transition-transform duration-300" />
-                    <div className="text-2xl md:text-3xl font-black tracking-tighter bg-gradient-to-r from-fuchsia-200 via-purple-300 to-indigo-400 bg-clip-text text-transparent group-hover:opacity-90 transition-opacity">
+                    <Star className="h-7 w-7 fill-emerald-400 text-emerald-400 mr-2 group-hover:rotate-[20deg] transition-transform duration-300" />
+                    <div className="text-2xl md:text-3xl font-black tracking-tighter bg-gradient-to-r from-lime-200 via-emerald-300 to-teal-400 bg-clip-text text-transparent group-hover:opacity-90 transition-opacity">
                         StarVault
                     </div>
                 </div>
@@ -155,7 +155,7 @@ export default function Navbar() {
                 {/* Navigation Links — desktop */}
                 <ul className="hidden lg:flex gap-8 text-gray-400 font-medium text-sm">
                     {[{ label: 'Movies', path: '/category/movies' }, { label: 'TV Shows', path: '/category/tv-shows' }, { label: 'Anime', path: '/category/anime' }].map((item) => (
-                        <li key={item.label} className={`cursor-pointer transition-colors duration-200 py-1 ${location.pathname === item.path ? 'text-purple-400 font-semibold' : 'hover:text-purple-400'}`} onClick={() => navigate(item.path)}>
+                        <li key={item.label} className={`cursor-pointer transition-colors duration-200 py-1 ${location.pathname === item.path ? 'text-emerald-400 font-semibold' : 'hover:text-emerald-400'}`} onClick={() => navigate(item.path)}>
                             {item.label}
                         </li>
                     ))}
@@ -168,10 +168,12 @@ export default function Navbar() {
                             <input
                                 className={`
                                     py-2 pl-10 pr-4 
-                                    bg-white/15 border border-white/25
-                                    text-white placeholder-gray-400 
+                                    bg-emerald-950/60 border border-emerald-500/40
+                                    text-white placeholder-emerald-300/50 
                                     rounded-full outline-none text-sm
-                                    focus:ring-2 focus:ring-purple-500/40 focus:border-purple-400/50 focus:bg-white/20
+                                    shadow-[0_0_12px_rgba(16,185,129,0.1)]
+                                    focus:ring-2 focus:ring-emerald-400/50 focus:border-emerald-400/70 focus:bg-emerald-950/80
+                                    focus:shadow-[0_0_20px_rgba(16,185,129,0.25)]
                                     transition-all duration-300
                                     w-[160px] focus:w-[240px] md:focus:w-[300px]
                                 `}
@@ -187,7 +189,7 @@ export default function Navbar() {
                             />
                             <button
                                 type="submit"
-                                className="absolute left-3 text-gray-500 group-focus-within/search:text-purple-400 transition-colors"
+                                className="absolute left-3 text-gray-500 group-focus-within/search:text-emerald-400 transition-colors"
                                 disabled={loading}
                             >
                                 <SearchIcon fontSize="small" />
@@ -196,11 +198,11 @@ export default function Navbar() {
 
                         {/* Search Results Dropdown */}
                         {showResults && (
-                            <div className="absolute top-full right-0 mt-3 w-[320px] md:w-[400px] max-h-[70vh] overflow-y-auto bg-[#13101f]/98 backdrop-blur-2xl border border-white/12 rounded-2xl shadow-2xl shadow-black/60 overflow-hidden">
+                            <div className="absolute top-full right-0 mt-3 w-[320px] md:w-[400px] max-h-[70vh] overflow-y-auto bg-[#0c1a0e]/98 backdrop-blur-2xl border border-white/12 rounded-2xl shadow-2xl shadow-black/60 overflow-hidden">
                                 {loading ? (
                                     <div className="p-8 text-center">
-                                        <div className="flex flex-col items-center justify-center gap-3 text-purple-300">
-                                            <div className="animate-spin rounded-full h-6 w-6 border-2 border-purple-500 border-t-transparent"></div>
+                                        <div className="flex flex-col items-center justify-center gap-3 text-emerald-300">
+                                            <div className="animate-spin rounded-full h-6 w-6 border-2 border-emerald-500 border-t-transparent"></div>
                                             <span className="text-sm font-medium">Searching the galaxy...</span>
                                         </div>
                                     </div>
@@ -230,7 +232,7 @@ export default function Navbar() {
                                                         )}
                                                     </div>
                                                     <div className="flex-1 min-w-0">
-                                                        <h3 className="text-gray-100 font-semibold truncate group-hover/item:text-purple-400 transition-colors text-sm">
+                                                        <h3 className="text-gray-100 font-semibold truncate group-hover/item:text-emerald-400 transition-colors text-sm">
                                                             {item.title}
                                                         </h3>
                                                         <div className="flex items-center gap-2 mt-1.5">
@@ -273,16 +275,16 @@ export default function Navbar() {
                                     <img
                                         src={avatarUrl}
                                         alt="User Avatar"
-                                        className="w-9 h-9 rounded-full border-2 border-purple-500/50 object-cover group-hover:border-purple-400 transition-colors shadow-md shadow-purple-900/30"
+                                        className="w-9 h-9 rounded-full border-2 border-emerald-500/50 object-cover group-hover:border-emerald-400 transition-colors shadow-md shadow-emerald-900/30"
                                     />
                                 ) : (
-                                    <div className="w-9 h-9 rounded-full border-2 border-purple-500/50 bg-purple-900/40 group-hover:border-purple-400 transition-colors"></div>
+                                    <div className="w-9 h-9 rounded-full border-2 border-emerald-500/50 bg-emerald-900/40 group-hover:border-emerald-400 transition-colors"></div>
                                 )}
                             </button>
 
                             {/* User Dropdown */}
                             {userMenuOpen && (
-                                <div className="absolute right-0 top-full mt-3 w-52 bg-[#13101f]/98 backdrop-blur-2xl border border-white/12 rounded-xl shadow-2xl shadow-black/60 overflow-hidden py-1">
+                                <div className="absolute right-0 top-full mt-3 w-52 bg-[#0c1a0e]/98 backdrop-blur-2xl border border-white/12 rounded-xl shadow-2xl shadow-black/60 overflow-hidden py-1">
                                     <button
                                         onClick={() => { navigate('/my-reviews'); setUserMenuOpen(false); }}
                                         className="flex items-center gap-3 w-full px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-white/8 transition-colors"
@@ -311,7 +313,7 @@ export default function Navbar() {
                             </button>
                             <button
                                 onClick={() => navigate('/register')}
-                                className="px-5 py-2 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold text-sm shadow-lg shadow-purple-900/30 hover:shadow-purple-700/40 hover:scale-105 active:scale-95 transition-all duration-300 border border-white/10"
+                                className="px-5 py-2 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold text-sm shadow-lg shadow-emerald-900/30 hover:shadow-emerald-700/40 hover:scale-105 active:scale-95 transition-all duration-300 border border-white/10"
                             >
                                 Sign Up
                             </button>
@@ -330,12 +332,12 @@ export default function Navbar() {
 
             {/* Mobile menu overlay */}
             {mobileMenuOpen && (
-                <div className="fixed inset-0 z-40 pt-20 bg-[#0d0a1a]/95 backdrop-blur-xl lg:hidden">
+                <div className="fixed inset-0 z-40 pt-20 bg-[#0a160c]/95 backdrop-blur-xl lg:hidden">
                     <ul className="flex flex-col items-center gap-6 py-8 text-gray-200 font-medium text-lg">
                         {[{ label: 'Movies', path: '/category/movies' }, { label: 'TV Shows', path: '/category/tv-shows' }, { label: 'Anime', path: '/category/anime' }].map((item) => (
                             <li
                                 key={item.label}
-                                className={`cursor-pointer transition-colors ${location.pathname === item.path ? 'text-purple-400 font-semibold' : 'hover:text-purple-400'}`}
+                                className={`cursor-pointer transition-colors ${location.pathname === item.path ? 'text-emerald-400 font-semibold' : 'hover:text-emerald-400'}`}
                                 onClick={() => { navigate(item.path); setMobileMenuOpen(false); }}
                             >
                                 {item.label}
@@ -354,7 +356,7 @@ export default function Navbar() {
                                 <li>
                                     <button
                                         onClick={() => { navigate('/register'); setMobileMenuOpen(false); }}
-                                        className="px-8 py-3 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold shadow-lg"
+                                        className="px-8 py-3 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold shadow-lg"
                                     >
                                         Sign Up
                                     </button>
