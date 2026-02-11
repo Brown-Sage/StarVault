@@ -18,6 +18,18 @@ interface Crew {
     writers: string[];
 }
 
+interface WatchProvider {
+    name: string;
+    logoUrl: string;
+}
+
+interface WatchProviders {
+    link: string | null;
+    flatrate: WatchProvider[];
+    rent: WatchProvider[];
+    buy: WatchProvider[];
+}
+
 interface MovieDetails {
     id: number;
     title: string;
@@ -37,6 +49,7 @@ interface MovieDetails {
     cast?: CastMember[];
     crew?: Crew;
     trailerKey?: string;
+    watchProviders?: WatchProviders | null;
 }
 
 function CastSection({ cast }: { cast: CastMember[] }) {
@@ -278,6 +291,26 @@ export default function MovieDetails() {
     };
 
 
+    // Helper to generate direct links for Indian platforms
+    const getProviderLink = (providerName: string) => {
+        if (!movie) return '#';
+        const titleEncoded = encodeURIComponent(movie.title);
+        const nameLower = providerName.toLowerCase();
+
+        if (nameLower.includes('netflix')) return `https://www.netflix.com/search?q=${titleEncoded}`;
+        if (nameLower.includes('prime video') || nameLower.includes('amazon')) return `https://www.primevideo.com/search/ref=atv_nb_sr?phrase=${titleEncoded}`;
+        if (nameLower.includes('hotstar')) return `https://www.hotstar.com/in/search?q=${titleEncoded}`;
+        if (nameLower.includes('jiocinema')) return `https://www.jiocinema.com/search/${titleEncoded}`;
+        if (nameLower.includes('zee5')) return `https://www.zee5.com/search?q=${titleEncoded}`;
+        if (nameLower.includes('sonyliv')) return `https://www.sonyliv.com/search?q=${titleEncoded}`;
+        if (nameLower.includes('apple')) return `https://tv.apple.com/in/search?term=${titleEncoded}`;
+        if (nameLower.includes('google play')) return `https://play.google.com/store/search?q=${titleEncoded}&c=movies`;
+        if (nameLower.includes('crunchyroll')) return `https://www.crunchyroll.com/search?q=${titleEncoded}`;
+
+        // Fallback to TMDB link
+        return movie.watchProviders?.link || '#';
+    };
+
     return (
         <div className="min-h-screen bg-gradient-to-b from-[#081a0b] via-[#0e1f10] to-[#081a0b] text-white">
             {/* Trailer Modal */}
@@ -405,6 +438,85 @@ export default function MovieDetails() {
             </div>
             {/* Cast Section */}
             {movie.cast && movie.cast.length > 0 && <CastSection cast={movie.cast} />}
+
+            {/* Where to Watch Section */}
+            <div className="container mx-auto px-4 py-8">
+                <h2 className="text-2xl font-bold mb-6 text-white flex items-center gap-3">
+                    <span className="bg-emerald-600 w-1 h-8 rounded-full"></span>
+                    Where to Watch (India)
+                </h2>
+                {movie.watchProviders && (movie.watchProviders.flatrate.length > 0 || movie.watchProviders.rent.length > 0 || movie.watchProviders.buy.length > 0) ? (
+                    <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6 md:p-8 border border-white/10 shadow-xl space-y-6">
+                        {movie.watchProviders.flatrate.length > 0 && (
+                            <div>
+                                <h3 className="text-sm font-semibold text-emerald-400 uppercase tracking-wider mb-3">Stream</h3>
+                                <div className="flex flex-wrap gap-3">
+                                    {movie.watchProviders.flatrate.map((provider) => (
+                                        <a
+                                            key={provider.name}
+                                            href={getProviderLink(provider.name)}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="group flex items-center gap-3 bg-white/5 hover:bg-emerald-600/20 border border-white/10 hover:border-emerald-500/40 rounded-xl px-4 py-3 transition-all duration-300"
+                                            title={`Watch on ${provider.name}`}
+                                        >
+                                            <img src={provider.logoUrl} alt={provider.name} className="w-10 h-10 rounded-lg object-cover" />
+                                            <span className="text-gray-200 font-medium text-sm group-hover:text-white transition-colors">{provider.name}</span>
+                                        </a>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                        {movie.watchProviders.rent.length > 0 && (
+                            <div>
+                                <h3 className="text-sm font-semibold text-yellow-400 uppercase tracking-wider mb-3">Rent</h3>
+                                <div className="flex flex-wrap gap-3">
+                                    {movie.watchProviders.rent.map((provider) => (
+                                        <a
+                                            key={provider.name}
+                                            href={getProviderLink(provider.name)}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="group flex items-center gap-3 bg-white/5 hover:bg-yellow-600/20 border border-white/10 hover:border-yellow-500/40 rounded-xl px-4 py-3 transition-all duration-300"
+                                            title={`Rent on ${provider.name}`}
+                                        >
+                                            <img src={provider.logoUrl} alt={provider.name} className="w-10 h-10 rounded-lg object-cover" />
+                                            <span className="text-gray-200 font-medium text-sm group-hover:text-white transition-colors">{provider.name}</span>
+                                        </a>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                        {movie.watchProviders.buy.length > 0 && (
+                            <div>
+                                <h3 className="text-sm font-semibold text-blue-400 uppercase tracking-wider mb-3">Buy</h3>
+                                <div className="flex flex-wrap gap-3">
+                                    {movie.watchProviders.buy.map((provider) => (
+                                        <a
+                                            key={provider.name}
+                                            href={getProviderLink(provider.name)}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="group flex items-center gap-3 bg-white/5 hover:bg-blue-600/20 border border-white/10 hover:border-blue-500/40 rounded-xl px-4 py-3 transition-all duration-300"
+                                            title={`Buy on ${provider.name}`}
+                                        >
+                                            <img src={provider.logoUrl} alt={provider.name} className="w-10 h-10 rounded-lg object-cover" />
+                                            <span className="text-gray-200 font-medium text-sm group-hover:text-white transition-colors">{provider.name}</span>
+                                        </a>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                        <p className="text-gray-500 text-xs pt-2 border-t border-white/5">
+                            Streaming info provided by JustWatch via TMDB. Direct links where available.
+                        </p>
+                    </div>
+                ) : (
+                    <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6 md:p-8 border border-white/10 shadow-xl text-center">
+                        <p className="text-gray-400">Not currently available for streaming in India</p>
+                    </div>
+                )}
+            </div>
 
             {/* Write Review Section */}
             <div className="container mx-auto px-4 py-8">

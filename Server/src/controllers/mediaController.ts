@@ -407,8 +407,8 @@ export const getMovieDetails = async (req: Request, res: Response) => {
         }
 
         const { id } = req.params;
-        // Fetch movie details, credits, and videos
-        const [detailsRes, creditsRes, videosRes] = await Promise.all([
+        // Fetch movie details, credits, videos, and watch providers
+        const [detailsRes, creditsRes, videosRes, watchRes] = await Promise.all([
             axios.get(`${TMDB_BASE_URL}/movie/${id}`, {
                 params: {
                     api_key: process.env.TMDB_API_KEY,
@@ -426,6 +426,11 @@ export const getMovieDetails = async (req: Request, res: Response) => {
                     api_key: process.env.TMDB_API_KEY,
                     language: 'en-US'
                 }
+            }),
+            axios.get(`${TMDB_BASE_URL}/movie/${id}/watch/providers`, {
+                params: {
+                    api_key: process.env.TMDB_API_KEY
+                }
             })
         ]);
 
@@ -442,7 +447,17 @@ export const getMovieDetails = async (req: Request, res: Response) => {
         // Trailer extraction (YouTube only)
         const trailer = videosRes.data.results.find((v: any) => v.type === 'Trailer' && v.site === 'YouTube');
         const trailerKey = trailer ? trailer.key : null;
-        res.json({ ...details, cast, crew: { directors, writers }, trailerKey });
+        // Watch providers extraction (IN region, fallback to US/GB)
+        const watchData = watchRes.data.results;
+        const regionData = watchData?.IN || watchData?.US || watchData?.GB || (Object.keys(watchData || {}).length > 0 ? watchData[Object.keys(watchData)[0]] : null);
+        const formatProvider = (p: any) => ({ name: p.provider_name, logoUrl: `https://image.tmdb.org/t/p/w92${p.logo_path}` });
+        const watchProviders = regionData ? {
+            link: regionData.link || null,
+            flatrate: (regionData.flatrate || []).map(formatProvider),
+            rent: (regionData.rent || []).map(formatProvider),
+            buy: (regionData.buy || []).map(formatProvider),
+        } : null;
+        res.json({ ...details, cast, crew: { directors, writers }, trailerKey, watchProviders });
     } catch (error) {
         console.error('Error fetching movie details:', error);
         res.status(500).json({
@@ -459,8 +474,8 @@ export const getTVDetails = async (req: Request, res: Response) => {
         }
 
         const { id } = req.params;
-        // Fetch TV show details, credits, and videos
-        const [detailsRes, creditsRes, videosRes] = await Promise.all([
+        // Fetch TV show details, credits, videos, and watch providers
+        const [detailsRes, creditsRes, videosRes, watchRes] = await Promise.all([
             axios.get(`${TMDB_BASE_URL}/tv/${id}`, {
                 params: {
                     api_key: process.env.TMDB_API_KEY,
@@ -478,6 +493,11 @@ export const getTVDetails = async (req: Request, res: Response) => {
                     api_key: process.env.TMDB_API_KEY,
                     language: 'en-US'
                 }
+            }),
+            axios.get(`${TMDB_BASE_URL}/tv/${id}/watch/providers`, {
+                params: {
+                    api_key: process.env.TMDB_API_KEY
+                }
             })
         ]);
 
@@ -494,7 +514,17 @@ export const getTVDetails = async (req: Request, res: Response) => {
         // Trailer extraction (YouTube only)
         const trailer = videosRes.data.results.find((v: any) => v.type === 'Trailer' && v.site === 'YouTube');
         const trailerKey = trailer ? trailer.key : null;
-        res.json({ ...details, cast, crew: { directors, writers }, trailerKey });
+        // Watch providers extraction (IN region, fallback to US/GB)
+        const watchData = watchRes.data.results;
+        const regionData = watchData?.IN || watchData?.US || watchData?.GB || (Object.keys(watchData || {}).length > 0 ? watchData[Object.keys(watchData)[0]] : null);
+        const formatProvider = (p: any) => ({ name: p.provider_name, logoUrl: `https://image.tmdb.org/t/p/w92${p.logo_path}` });
+        const watchProviders = regionData ? {
+            link: regionData.link || null,
+            flatrate: (regionData.flatrate || []).map(formatProvider),
+            rent: (regionData.rent || []).map(formatProvider),
+            buy: (regionData.buy || []).map(formatProvider),
+        } : null;
+        res.json({ ...details, cast, crew: { directors, writers }, trailerKey, watchProviders });
     } catch (error) {
         console.error('Error fetching TV show details:', error);
         res.status(500).json({
