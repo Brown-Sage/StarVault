@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Star, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Star, ChevronLeft, ChevronRight, Eye, Bookmark, Heart } from 'lucide-react';
+import { toggleUserMedia, getUserMediaStatus } from '../api/userMediaApi';
 import { fetchWithRetry } from './HomePage';
 import { getReviews } from './reviewApi';
 import { createReview, getUserReview, updateReview, addReply, type Review } from "./reviewPostApi";
@@ -160,6 +161,10 @@ export default function MovieDetails() {
     const [error, setError] = useState<string | null>(null);
 
     const [showTrailer, setShowTrailer] = useState(false);
+    const [isWatched, setIsWatched] = useState(false);
+    const [isWatchlist, setIsWatchlist] = useState(false);
+    const [isFavorite, setIsFavorite] = useState(false);
+    const [actionLoading, setActionLoading] = useState(false);
     const [reviews, setReviews] = useState<any[]>([]);
     const [userReview, setUserReview] = useState<Review | null>(null);
     const [isEditing, setIsEditing] = useState(false);
@@ -201,6 +206,13 @@ export default function MovieDetails() {
             getReviews(id.toString()).then(setReviews);
 
             if (token) {
+                const numericId = id.split('-')[0];
+                getUserMediaStatus(numericId).then(status => {
+                    setIsWatched(status.isWatched);
+                    setIsWatchlist(status.isWatchlist);
+                    setIsFavorite(status.isFavorite);
+                });
+
                 getUserReview(id.toString()).then(review => {
                     if (review) {
                         setUserReview(review);
@@ -215,6 +227,48 @@ export default function MovieDetails() {
             }
         }
     }, [id, type, token]);
+
+    const handleAction = async (action: 'toggleWatched' | 'toggleWatchlist' | 'toggleFavorite') => {
+        if (!movie || actionLoading) return;
+
+        // Optimistic UI update
+        if (action === 'toggleWatched') {
+            const newState = !isWatched;
+            setIsWatched(newState);
+            if (newState) setIsWatchlist(false);
+        }
+        if (action === 'toggleWatchlist') {
+            const newState = !isWatchlist;
+            setIsWatchlist(newState);
+            if (newState) setIsWatched(false);
+        }
+        if (action === 'toggleFavorite') setIsFavorite(!isFavorite);
+
+        try {
+            setActionLoading(true);
+            const response = await toggleUserMedia({
+                mediaId: movie.id.toString(),
+                mediaType: type as 'movie' | 'tv',
+                mediaTitle: movie.title,
+                mediaPoster: movie.imageUrl,
+                mediaReleaseDate: movie.releaseDate,
+                action
+            });
+
+            // Sync with server response to be sure
+            setIsWatched(response.isWatched);
+            setIsWatchlist(response.isWatchlist);
+            setIsFavorite(response.isFavorite);
+        } catch (error) {
+            // Revert on error
+            if (action === 'toggleWatched') setIsWatched(!isWatched);
+            if (action === 'toggleWatchlist') setIsWatchlist(!isWatchlist);
+            if (action === 'toggleFavorite') setIsFavorite(!isFavorite);
+            console.error('Action failed:', error);
+        } finally {
+            setActionLoading(false);
+        }
+    };
 
     if (loading) {
         return (
@@ -387,6 +441,34 @@ export default function MovieDetails() {
                                         );
                                     })}
                                 </div>
+                            </div>
+
+                            {/* Actions Divider */}
+                            <div className="h-8 w-px bg-white/10"></div>
+
+                            {/* User Actions */}
+                            <div className="flex items-center gap-3">
+                                <button
+                                    onClick={() => handleAction('toggleWatchlist')}
+                                    className={`p-3 rounded-full transition-all duration-300 ${isWatchlist ? 'bg-emerald-600 text-white shadow-[0_0_15px_rgba(5,150,105,0.4)]' : 'bg-white/10 text-gray-300 hover:bg-white/20 hover:text-white'}`}
+                                    title={isWatchlist ? "Remove from Watchlist" : "Add to Watchlist"}
+                                >
+                                    <Bookmark className={`w-5 h-5 ${isWatchlist ? 'fill-current' : ''}`} />
+                                </button>
+                                <button
+                                    onClick={() => handleAction('toggleWatched')}
+                                    className={`p-3 rounded-full transition-all duration-300 ${isWatched ? 'bg-emerald-600 text-white shadow-[0_0_15px_rgba(5,150,105,0.4)]' : 'bg-white/10 text-gray-300 hover:bg-white/20 hover:text-white'}`}
+                                    title={isWatched ? "Mark as Unwatched" : "Mark as Watched"}
+                                >
+                                    <Eye className={`w-5 h-5 ${isWatched ? 'fill-current' : ''}`} />
+                                </button>
+                                <button
+                                    onClick={() => handleAction('toggleFavorite')}
+                                    className={`p-3 rounded-full transition-all duration-300 ${isFavorite ? 'bg-red-600 text-white shadow-[0_0_15px_rgba(220,38,38,0.4)]' : 'bg-white/10 text-gray-300 hover:bg-white/20 hover:text-white'}`}
+                                    title={isFavorite ? "Remove from Favorites" : "Add to Favorites"}
+                                >
+                                    <Heart className={`w-5 h-5 ${isFavorite ? 'fill-current' : ''}`} />
+                                </button>
                             </div>
 
                             {/* Actions Divider */}
