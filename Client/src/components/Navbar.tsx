@@ -25,6 +25,8 @@ export default function Navbar() {
     const [scrolled, setScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [userMenuOpen, setUserMenuOpen] = useState(false);
+    const [isVibeSearch, setIsVibeSearch] = useState(false);
+
     const navigate = useNavigate();
     const location = useLocation();
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -82,7 +84,7 @@ export default function Navbar() {
         navigate('/');
     };
 
-    const performSearch = async (query: string) => {
+    const performSearch = async (query: string, vibeMode: boolean) => {
         if (!query.trim()) {
             setSearchResults([]);
             return;
@@ -92,7 +94,17 @@ export default function Navbar() {
         setShowResults(true);
 
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/search?query=${encodeURIComponent(query.trim())}`);
+            let response;
+            if (vibeMode) {
+                response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/search/vibe`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query: query.trim() })
+                });
+            } else {
+                response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/search?query=${encodeURIComponent(query.trim())}`);
+            }
+
             if (!response.ok) {
                 throw new Error('Search failed');
             }
@@ -109,7 +121,7 @@ export default function Navbar() {
     const handleSearch = (e: FormEvent) => {
         e.preventDefault();
         if (timeoutRef.current) clearTimeout(timeoutRef.current);
-        performSearch(searchQuery);
+        performSearch(searchQuery, isVibeSearch);
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -126,9 +138,21 @@ export default function Navbar() {
             return;
         }
 
-        timeoutRef.current = setTimeout(() => {
-            performSearch(query);
-        }, 1000);
+        // Only debounce standard search. Wait for manual submit on Vibe search.
+        if (!isVibeSearch) {
+            timeoutRef.current = setTimeout(() => {
+                performSearch(query, false);
+            }, 1000);
+        }
+    };
+
+    const toggleVibeSearch = () => {
+        const newVibeState = !isVibeSearch;
+        setIsVibeSearch(newVibeState);
+        setSearchQuery('');
+        setSearchResults([]);
+        setShowResults(false);
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
 
     const handleResultClick = (item: Tmdb_info) => {
@@ -167,18 +191,22 @@ export default function Navbar() {
                         <form onSubmit={handleSearch} className="relative flex items-center">
                             <input
                                 className={`
-                                    py-2 pl-10 pr-4 
-                                    bg-emerald-950/60 border border-emerald-500/40
-                                    text-white placeholder-emerald-300/50 
+                                    py-2 pl-10 pr-10
+                                    bg-emerald-950/60 border 
+                                    text-white 
                                     rounded-full outline-none text-sm
                                     shadow-[0_0_12px_rgba(16,185,129,0.1)]
-                                    focus:ring-2 focus:ring-emerald-400/50 focus:border-emerald-400/70 focus:bg-emerald-950/80
+                                    focus:ring-2 focus:bg-emerald-950/80
                                     focus:shadow-[0_0_20px_rgba(16,185,129,0.25)]
                                     transition-all duration-300
-                                    w-[160px] focus:w-[240px] md:focus:w-[300px]
+                                    w-[160px] focus:w-[240px] md:focus:w-[320px] 
+                                    ${isVibeSearch
+                                        ? 'border-purple-500/60 focus:ring-purple-400/50 focus:border-purple-400/70 placeholder-purple-300/60 shadow-[0_0_12px_rgba(168,85,247,0.1)] focus:shadow-[0_0_20px_rgba(168,85,247,0.25)]'
+                                        : 'border-emerald-500/40 focus:ring-emerald-400/50 focus:border-emerald-400/70 placeholder-emerald-300/50'
+                                    }
                                 `}
                                 type="text"
-                                placeholder='Search...'
+                                placeholder={isVibeSearch ? 'Describe a vibe or feeling... (Press Enter)' : 'Search...'}
                                 value={searchQuery}
                                 onChange={handleChange}
                                 onFocus={() => {
@@ -189,27 +217,35 @@ export default function Navbar() {
                             />
                             <button
                                 type="submit"
-                                className="absolute left-3 text-gray-500 group-focus-within/search:text-emerald-400 transition-colors"
+                                className={`absolute left-3 transition-colors ${isVibeSearch ? 'group-focus-within/search:text-purple-400 text-purple-400/70' : 'group-focus-within/search:text-emerald-400 text-gray-500'}`}
                                 disabled={loading}
                             >
                                 <SearchIcon fontSize="small" />
+                            </button>
+                            <button
+                                type="button"
+                                onClick={toggleVibeSearch}
+                                title={isVibeSearch ? 'Switch to Standard Search' : 'Switch to AI Vibe Search'}
+                                className={`absolute right-3 p-1 rounded-full transition-all duration-300 ${isVibeSearch ? 'text-purple-400 bg-purple-500/20' : 'text-gray-400 hover:text-emerald-400'}`}
+                            >
+                                <Star className={`w-4 h-4 ${isVibeSearch ? 'fill-purple-400' : ''}`} />
                             </button>
                         </form>
 
                         {/* Search Results Dropdown */}
                         {showResults && (
-                            <div className="absolute top-full right-0 mt-3 w-[320px] md:w-[400px] max-h-[70vh] overflow-y-auto bg-[#0c1a0e]/98 backdrop-blur-2xl border border-white/12 rounded-2xl shadow-2xl shadow-black/60 overflow-hidden">
+                            <div className={`absolute top-full right-0 mt-3 w-[320px] md:w-[400px] max-h-[70vh] overflow-y-auto bg-[#0c1a0e]/98 backdrop-blur-2xl border ${isVibeSearch ? 'border-purple-500/20' : 'border-white/12'} rounded-2xl shadow-2xl shadow-black/60 overflow-hidden`}>
                                 {loading ? (
                                     <div className="p-8 text-center">
-                                        <div className="flex flex-col items-center justify-center gap-3 text-emerald-300">
-                                            <div className="animate-spin rounded-full h-6 w-6 border-2 border-emerald-500 border-t-transparent"></div>
-                                            <span className="text-sm font-medium">Searching the galaxy...</span>
+                                        <div className={`flex flex-col items-center justify-center gap-3 ${isVibeSearch ? 'text-purple-300' : 'text-emerald-300'}`}>
+                                            <div className={`animate-spin rounded-full h-6 w-6 border-2 border-t-transparent ${isVibeSearch ? 'border-purple-500' : 'border-emerald-500'}`}></div>
+                                            <span className="text-sm font-medium">{isVibeSearch ? 'Detecting vibes...' : 'Searching the galaxy...'}</span>
                                         </div>
                                     </div>
                                 ) : searchResults.length > 0 ? (
                                     <div className="py-2">
                                         <div className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                            Top Results
+                                            {isVibeSearch ? 'Vibe Matches ✨' : 'Top Results'}
                                         </div>
                                         {searchResults.map((item) => (
                                             <div
@@ -232,7 +268,7 @@ export default function Navbar() {
                                                         )}
                                                     </div>
                                                     <div className="flex-1 min-w-0">
-                                                        <h3 className="text-gray-100 font-semibold truncate group-hover/item:text-emerald-400 transition-colors text-sm">
+                                                        <h3 className={`text-gray-100 font-semibold truncate transition-colors text-sm ${isVibeSearch ? 'group-hover/item:text-purple-400' : 'group-hover/item:text-emerald-400'}`}>
                                                             {item.title}
                                                         </h3>
                                                         <div className="flex items-center gap-2 mt-1.5">
@@ -257,7 +293,7 @@ export default function Navbar() {
                                 ) : (
                                     <div className="p-8 text-center">
                                         <p className="text-gray-400 font-medium">No results found</p>
-                                        <p className="text-gray-600 text-sm mt-1">Try searching for something else</p>
+                                        <p className="text-gray-600 text-sm mt-1">{isVibeSearch ? 'Try a different vibe description' : 'Try searching for something else'}</p>
                                     </div>
                                 )}
                             </div>
