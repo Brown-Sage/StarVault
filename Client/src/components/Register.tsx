@@ -23,8 +23,10 @@ const Register = () => {
             setError("Passwords do not match.");
             return;
         }
-        if (password.length < 6) {
-            setError("Password must be at least 6 characters.");
+
+        const strongPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+        if (!strongPassword.test(password)) {
+            setError("Password must be at least 8 characters and include an uppercase letter, lowercase letter, and a number.");
             return;
         }
 

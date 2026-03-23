@@ -19,7 +19,6 @@ const Login = () => {
         try {
             const data = await loginUser(email, password);
             localStorage.setItem("token", data.token);
-            localStorage.setItem("userEmail", email);
             window.dispatchEvent(new Event("auth-change"));
             navigate("/");
         } catch (err: unknown) {

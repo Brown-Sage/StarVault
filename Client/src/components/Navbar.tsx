@@ -4,6 +4,7 @@ import type { FormEvent } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import md5 from 'md5';
 import { Star, Menu, X, LogOut, BookOpen } from 'lucide-react';
+import { getMe } from './authApi';
 
 interface Tmdb_info {
     id: number;
@@ -51,14 +52,22 @@ export default function Navbar() {
     }, []);
 
     useEffect(() => {
-        const checkAuth = () => {
+        const checkAuth = async () => {
             const token = localStorage.getItem("token");
-            const email = localStorage.getItem("userEmail");
-
             if (token) {
                 setIsLoggedIn(true);
-                if (email) {
-                    setAvatarUrl(`https://www.gravatar.com/avatar/${md5(email.trim().toLowerCase())}?d=identicon`);
+                try {
+                    const user = await getMe();
+                    setAvatarUrl(`https://www.gravatar.com/avatar/${md5(user.email.trim().toLowerCase())}?d=identicon`);
+                } catch (err: unknown) {
+                    // Only clear token on 401 (expired/invalid) — not on network blips or server errors
+                    const status = (err as { response?: { status?: number } })?.response?.status;
+                    if (status === 401) {
+                        localStorage.removeItem("token");
+                        setIsLoggedIn(false);
+                        setAvatarUrl(null);
+                    }
+                    // For any other error, stay logged in — the token is still valid
                 }
             } else {
                 setIsLoggedIn(false);
@@ -76,7 +85,6 @@ export default function Navbar() {
 
     const handleLogout = () => {
         localStorage.removeItem("token");
-        localStorage.removeItem("userEmail");
         window.dispatchEvent(new Event("auth-change"));
         setIsLoggedIn(false);
         setAvatarUrl(null);

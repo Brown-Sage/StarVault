@@ -28,7 +28,7 @@ app.get('/api/test', (req, res) => {
 app.get("/api/protected", protect, (req, res) => {
     res.json({
         message: "You are authorized",
-        userId: (req as any).userId,
+        userId: req.user,
     });
 });
 
