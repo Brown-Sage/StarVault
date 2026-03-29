@@ -69,7 +69,7 @@ function MovieCard({ item }: { item: Tmdb_info }) {
 
                     {/* Play Button on Hover */}
                     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
-                        <div className="bg-emerald-600 hover:bg-emerald-500 rounded-full p-4 transform scale-75 group-hover:scale-100 transition-transform duration-300 shadow-2xl">
+                        <div className="bg-indigo-600 hover:bg-indigo-500 rounded-full p-4 transform scale-75 group-hover:scale-100 transition-transform duration-300 shadow-2xl">
                             <Play className="w-6 h-6 text-white fill-white" />
                         </div>
                     </div>
@@ -81,7 +81,7 @@ function MovieCard({ item }: { item: Tmdb_info }) {
                     </div>
 
                     {/* Type Badge */}
-                    <div className="absolute top-2 left-2 bg-emerald-600/90 backdrop-blur-sm px-2 py-1 rounded-md">
+                    <div className="absolute top-2 left-2 bg-indigo-600/90 backdrop-blur-sm px-2 py-1 rounded-md">
                         <span className="text-xs font-semibold text-white uppercase tracking-wide">
                             {item.type}
                         </span>
@@ -90,7 +90,7 @@ function MovieCard({ item }: { item: Tmdb_info }) {
 
                 {/* Title and Info */}
                 <div className="mt-3">
-                    <h3 className="text-white font-semibold text-sm line-clamp-2 group-hover:text-emerald-400 transition-colors">
+                    <h3 className="text-white font-semibold text-sm line-clamp-2 group-hover:text-indigo-400 transition-colors">
                         {item.title}
                     </h3>
                     <p className="text-gray-400 text-xs mt-1">
@@ -187,10 +187,10 @@ export default function BrowseAll() {
 
     if (!config) {
         return (
-            <div className="min-h-screen bg-gradient-to-b from-[#081a0b] via-[#0e1f10] to-[#081a0b] flex items-center justify-center">
+            <div className="min-h-screen bg-gradient-to-b from-[#0f172a] via-[#1e293b] to-[#0f172a] flex items-center justify-center">
                 <div className="text-center">
                     <h1 className="text-4xl font-bold text-white mb-4">Category Not Found</h1>
-                    <Link to="/" className="text-emerald-400 hover:text-emerald-300">
+                    <Link to="/" className="text-indigo-400 hover:text-indigo-300">
                         Return to Home
                     </Link>
                 </div>
@@ -199,9 +199,9 @@ export default function BrowseAll() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-[#081a0b] via-[#0e1f10] to-[#081a0b]">
+        <div className="min-h-screen bg-gradient-to-b from-[#0f172a] via-[#1e293b] to-[#0f172a]">
             {/* Header */}
-            <div className="sticky top-0 z-10 bg-gradient-to-b from-[#081a0b] to-[#081a0b]/80 backdrop-blur-lg border-b border-white/10">
+            <div className="sticky top-0 z-10 bg-gradient-to-b from-[#0f172a] to-[#0f172a]/80 backdrop-blur-lg border-b border-white/10">
                 <div className="container mx-auto px-4 md:px-8 py-6">
                     <div className="flex items-center gap-4 mb-4">
                         <button
@@ -252,7 +252,7 @@ export default function BrowseAll() {
                             <div className="flex justify-center mt-12">
                                 <button
                                     onClick={loadMore}
-                                    className="bg-emerald-600 hover:bg-emerald-500 text-white px-8 py-3 rounded-full font-semibold transition-all duration-300 hover:scale-105 shadow-lg shadow-emerald-600/50"
+                                    className="bg-indigo-600 hover:bg-indigo-500 text-white px-8 py-3 rounded-full font-semibold transition-all duration-300 hover:scale-105 shadow-lg shadow-indigo-600/50"
                                 >
                                     Load More
                                 </button>

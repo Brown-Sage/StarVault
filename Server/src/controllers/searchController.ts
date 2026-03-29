@@ -188,3 +188,122 @@ User: "psychological thriller where you can't trust anyone"
     }
 };
 
+// ─── Chatbot ─────────────────────────────────────────────────────────────────
+
+interface ChatMessage {
+    role: 'user' | 'assistant';
+    content: string;
+}
+
+const CHATBOT_SYSTEM_PROMPT = `You are StarBot, a friendly AI assistant built into StarVault — a platform for discovering movies, TV shows, and anime.
+
+YOUR STRICT SCOPE:
+- You ONLY discuss movies, TV shows, anime, actors, directors, genres, and related topics.
+- If the user asks ANYTHING unrelated (coding, politics, math, general knowledge, etc.), respond with this exact JSON and nothing else:
+  {"text": "I'm StarBot — I only know about movies, TV shows, and anime! Try asking me for recommendations or questions about a specific title. 🎬", "titles": []}
+
+RESPONSE FORMAT:
+- Always respond with a single valid JSON object: {"text": "...", "titles": [...]}
+- "text": Your conversational reply (1–3 friendly sentences). Never include markdown or special formatting inside "text".
+- "titles": An array of EXACT movie/TV/anime titles (as they appear on TMDB/IMDb) when you are recommending content. Use [] if no titles are being recommended.
+- Do NOT include any text outside the JSON object. No markdown fences, no preamble.
+
+EXAMPLES:
+User: "recommend me a good sci-fi movie"
+→ {"text": "Here are some fantastic sci-fi films you might love!", "titles": ["Interstellar", "Arrival", "The Martian", "Ex Machina", "Dune"]}
+
+User: "who directed Parasite?"
+→ {"text": "Parasite was directed by the brilliant Bong Joon-ho. He won the Academy Award for Best Director for it in 2020!", "titles": []}
+
+User: "what is the capital of France?"
+→ {"text": "I'm StarBot — I only know about movies, TV shows, and anime! Try asking me for recommendations or questions about a specific title. 🎬", "titles": []}`;
+
+export const chatbot = async (req: Request, res: Response) => {
+    try {
+        const { message, history = [] } = req.body as { message: string; history: ChatMessage[] };
+
+        if (!message || typeof message !== 'string' || message.trim() === '') {
+            return res.status(400).json({ error: 'Message is required' });
+        }
+
+        if (!process.env.GROQ_API_KEY || !process.env.TMDB_API_KEY) {
+            throw new Error('API keys are missing in environment variables');
+        }
+
+        const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+
+        // Build message history (cap at last 10 for context window)
+        const recentHistory = history.slice(-10);
+
+        const chatCompletion = await groq.chat.completions.create({
+            messages: [
+                { role: 'system', content: CHATBOT_SYSTEM_PROMPT },
+                ...recentHistory,
+                { role: 'user', content: message }
+            ],
+            model: 'llama-3.3-70b-versatile',
+            temperature: 0.7,
+            response_format: { type: 'json_object' }
+        });
+
+        const rawResponse = chatCompletion.choices[0]?.message?.content || '{}';
+        console.log('ChatBot raw response:', rawResponse);
+
+        let parsed: { text?: string; titles?: string[] } = {};
+        try {
+            parsed = JSON.parse(rawResponse);
+        } catch {
+            parsed = { text: 'Something went wrong. Please try again!', titles: [] };
+        }
+
+        const text = parsed.text || '';
+        const titles: string[] = Array.isArray(parsed.titles)
+            ? parsed.titles.filter((t: unknown) => typeof t === 'string').slice(0, 10)
+            : [];
+
+        // Resolve titles to TMDB media objects (reuse vibe search logic)
+        let media: object[] = [];
+        if (titles.length > 0) {
+            const tmdbLookups = await Promise.all(
+                titles.map(title =>
+                    axios.get<TMDBResponse>(`${TMDB_BASE_URL}/search/multi`, {
+                        params: {
+                            api_key: process.env.TMDB_API_KEY,
+                            language: 'en-US',
+                            query: title,
+                            page: 1
+                        }
+                    }).catch(() => null)
+                )
+            );
+
+            const seenIds = new Set<number>();
+            for (const result of tmdbLookups) {
+                if (!result) continue;
+                const bestMatch = result.data.results.find(item => item.media_type !== 'person');
+                if (!bestMatch || seenIds.has(bestMatch.id)) continue;
+                seenIds.add(bestMatch.id);
+                media.push({
+                    id: bestMatch.id,
+                    title: bestMatch.title || bestMatch.name,
+                    type: bestMatch.media_type,
+                    rating: bestMatch.vote_average,
+                    imageUrl: bestMatch.poster_path ? `${TMDB_IMAGE_BASE_URL}${bestMatch.poster_path}` : null,
+                    overview: bestMatch.overview,
+                    releaseDate: bestMatch.release_date || bestMatch.first_air_date
+                });
+            }
+        }
+
+        console.log(`ChatBot: "${message}" → ${media.length} media results`);
+        res.json({ text, media });
+
+    } catch (error) {
+        console.error('ChatBot error:', error);
+        res.status(500).json({
+            error: 'Failed to get chatbot response',
+            details: error instanceof Error ? error.message : 'Unknown error'
+        });
+    }
+};
+

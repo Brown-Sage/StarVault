@@ -98,7 +98,7 @@ export default function MyReviews() {
         <button
             onClick={() => setActiveTab(id)}
             className={`flex items-center gap-2 px-6 py-3 rounded-full font-medium transition-all duration-300 ${activeTab === id
-                ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-900/40 transform scale-105'
+                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/40 transform scale-105'
                 : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
                 }`}
         >
@@ -113,7 +113,7 @@ export default function MyReviews() {
         return (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {reviews.map((review) => (
-                    <div key={review._id} className="bg-gray-800/50 backdrop-blur-sm rounded-xl overflow-hidden border border-white/10 shadow-xl hover:shadow-emerald-900/20 hover:border-emerald-500/30 transition-all duration-300 group flex flex-col h-full">
+                    <div key={review._id} className="bg-gray-800/50 backdrop-blur-sm rounded-xl overflow-hidden border border-white/10 shadow-xl hover:shadow-indigo-900/20 hover:border-indigo-500/30 transition-all duration-300 group flex flex-col h-full">
                         <Link to={`/${review.mediaType}/${review.mediaId}`} className="block relative aspect-video overflow-hidden">
                             {review.mediaPoster ? (
                                 <img
@@ -127,11 +127,11 @@ export default function MyReviews() {
                                 </div>
                             )}
                             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex flex-col justify-end p-4">
-                                <h3 className="font-bold text-lg truncate text-white group-hover:text-emerald-400 transition-colors drop-shadow-md">
+                                <h3 className="font-bold text-lg truncate text-white group-hover:text-indigo-400 transition-colors drop-shadow-md">
                                     {review.mediaTitle}
                                 </h3>
                                 <div className="text-xs text-gray-300 flex items-center gap-2 mt-1">
-                                    <span className="uppercase tracking-wider font-semibold opacity-75 text-emerald-300">{review.mediaType}</span>
+                                    <span className="uppercase tracking-wider font-semibold opacity-75 text-indigo-300">{review.mediaType}</span>
                                     {review.mediaReleaseDate && (
                                         <>
                                             <span className="w-1 h-1 rounded-full bg-gray-500"></span>
@@ -162,7 +162,7 @@ export default function MyReviews() {
                             </div>
 
                             <div className="mt-4 pt-4 border-t border-white/5 flex justify-end">
-                                <Link to={`/${review.mediaType}/${review.mediaId}`} className="text-xs font-medium text-emerald-400 hover:text-emerald-300 flex items-center gap-1 transition-colors">
+                                <Link to={`/${review.mediaType}/${review.mediaId}`} className="text-xs font-medium text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition-colors">
                                     View Details &rarr;
                                 </Link>
                             </div>
@@ -179,7 +179,7 @@ export default function MyReviews() {
         return (
             <div className="grid gap-6 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                 {items.map((item) => (
-                    <Link key={item._id} to={`/${item.mediaType}/${item.mediaId}`} className="group bg-gray-800/50 backdrop-blur-sm rounded-xl overflow-hidden border border-white/10 shadow-lg hover:shadow-emerald-900/20 hover:border-emerald-500/30 transition-all duration-300 flex flex-col h-full">
+                    <Link key={item._id} to={`/${item.mediaType}/${item.mediaId}`} className="group bg-gray-800/50 backdrop-blur-sm rounded-xl overflow-hidden border border-white/10 shadow-lg hover:shadow-indigo-900/20 hover:border-indigo-500/30 transition-all duration-300 flex flex-col h-full">
                         <div className="relative aspect-[2/3] overflow-hidden">
                             {item.mediaPoster ? (
                                 <img
@@ -193,8 +193,8 @@ export default function MyReviews() {
                                 </div>
                             )}
                             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
-                                <span className="text-emerald-400 font-medium text-sm flex items-center gap-1">
-                                    View Details <div className="w-4 h-4 rounded-full border border-emerald-400 flex items-center justify-center text-[10px] ml-1">&rarr;</div>
+                                <span className="text-indigo-400 font-medium text-sm flex items-center gap-1">
+                                    View Details <div className="w-4 h-4 rounded-full border border-indigo-400 flex items-center justify-center text-[10px] ml-1">&rarr;</div>
                                 </span>
                             </div>
 
@@ -211,7 +211,7 @@ export default function MyReviews() {
                                     </div>
                                 )}
                                 {item.isWatched && (
-                                    <div className="bg-emerald-500/90 p-1.5 rounded-full backdrop-blur-md shadow-lg" title="Watched">
+                                    <div className="bg-indigo-500/90 p-1.5 rounded-full backdrop-blur-md shadow-lg" title="Watched">
                                         <Clock className="w-3 h-3 text-white" />
                                     </div>
                                 )}
@@ -219,11 +219,11 @@ export default function MyReviews() {
                         </div>
 
                         <div className="p-4 flex-1 flex flex-col">
-                            <h3 className="font-bold text-white group-hover:text-emerald-400 transition-colors line-clamp-1 mb-1" title={item.mediaTitle}>
+                            <h3 className="font-bold text-white group-hover:text-indigo-400 transition-colors line-clamp-1 mb-1" title={item.mediaTitle}>
                                 {item.mediaTitle}
                             </h3>
                             <div className="flex items-center justify-between mt-auto">
-                                <span className="text-xs text-emerald-400/80 uppercase font-bold tracking-wider">{item.mediaType}</span>
+                                <span className="text-xs text-indigo-400/80 uppercase font-bold tracking-wider">{item.mediaType}</span>
                                 {item.mediaReleaseDate && (
                                     <span className="text-xs text-gray-500">{new Date(item.mediaReleaseDate).getFullYear()}</span>
                                 )}
@@ -241,18 +241,18 @@ export default function MyReviews() {
                 <Film className="w-8 h-8 text-gray-600" />
             </div>
             <p className="text-gray-400 text-lg mb-6">{message}</p>
-            <Link to="/" className="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3 rounded-full font-semibold transition-all shadow-lg hover:shadow-emerald-900/40 transform hover:scale-105 active:scale-95 duration-200">
+            <Link to="/" className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-full font-semibold transition-all shadow-lg hover:shadow-indigo-900/40 transform hover:scale-105 active:scale-95 duration-200">
                 Browse Content
             </Link>
         </div>
     );
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-[#081a0b] via-[#0e1f10] to-[#081a0b] text-white pt-24 pb-12 px-4 md:px-8">
+        <div className="min-h-screen bg-gradient-to-b from-[#0f172a] via-[#1e293b] to-[#0f172a] text-white pt-24 pb-12 px-4 md:px-8">
             <div className="container mx-auto">
                 <div className="mb-8">
                     <h1 className="text-3xl font-bold mb-6 flex items-center gap-3">
-                        <span className="bg-emerald-600 w-1.5 h-8 rounded-full shadow-[0_0_10px_rgba(5,150,105,0.6)]"></span>
+                        <span className="bg-indigo-600 w-1.5 h-8 rounded-full shadow-[0_0_10px_rgba(5,150,105,0.6)]"></span>
                         My Library
                     </h1>
 
@@ -266,7 +266,7 @@ export default function MyReviews() {
 
                 {loading ? (
                     <div className="flex justify-center items-center py-20">
-                        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.4)]"></div>
+                        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500 shadow-[0_0_15px_rgba(16,185,129,0.4)]"></div>
                     </div>
                 ) : error ? (
                     <div className="text-red-400 text-xl bg-red-900/20 px-6 py-4 rounded-xl border border-red-500/30 backdrop-blur-sm text-center">

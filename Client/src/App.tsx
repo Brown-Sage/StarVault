@@ -8,14 +8,16 @@ import Navbar from './components/Navbar';
 import Login from './components/Login';
 import Register from './components/Register';
 import CastDetails from './components/CastDetails';
+import ChatBot from './components/ChatBot';
 
 import MyReviews from './pages/MyReviews';
 
 function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-gray-900">
+      <div className="min-h-screen bg-slate-950">
         <Navbar />
+        <ChatBot />
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<Login />} />

@@ -61,7 +61,7 @@ const Register = () => {
     };
 
     return (
-        <div className="relative flex min-h-screen overflow-hidden bg-gradient-to-br from-[#081a0b] via-[#0e1f10] to-[#081a0b]">
+        <div className="relative flex min-h-screen overflow-hidden bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a]">
 
             {/* Left form panel */}
             <div className="relative flex w-full items-center justify-center px-6 py-20 lg:w-1/2">
@@ -73,15 +73,15 @@ const Register = () => {
                 >
                     {/* Mobile logo */}
                     <motion.div variants={itemVariants} className="mb-10 flex items-center justify-center gap-2 lg:hidden">
-                        <Star className="h-7 w-7 fill-emerald-400 text-emerald-400" />
-                        <span className="bg-gradient-to-r from-lime-200 via-emerald-300 to-teal-400 bg-clip-text text-3xl font-black tracking-tighter text-transparent">
+                        <Star className="h-7 w-7 fill-indigo-400 text-indigo-400" />
+                        <span className="bg-gradient-to-r from-lime-200 via-indigo-300 to-violet-400 bg-clip-text text-3xl font-black tracking-tighter text-transparent">
                             StarVault
                         </span>
                     </motion.div>
 
                     <motion.div
                         variants={itemVariants}
-                        className="rounded-3xl border border-white/15 bg-white/[0.07] p-8 shadow-2xl shadow-emerald-950/30 backdrop-blur-xl sm:p-10"
+                        className="rounded-3xl border border-white/15 bg-white/[0.07] p-8 shadow-2xl shadow-indigo-950/30 backdrop-blur-xl sm:p-10"
                     >
                         <motion.div variants={itemVariants}>
                             <h2 className="text-3xl font-bold text-white">Create account</h2>
@@ -104,7 +104,7 @@ const Register = () => {
                             <motion.div
                                 initial={{ opacity: 0, y: -8 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                className="mt-5 rounded-xl border border-emerald-500/30 bg-emerald-500/15 px-4 py-3 text-sm text-emerald-300"
+                                className="mt-5 rounded-xl border border-indigo-500/30 bg-indigo-500/15 px-4 py-3 text-sm text-indigo-300"
                             >
                                 Account created! Redirecting to login…
                             </motion.div>
@@ -116,7 +116,7 @@ const Register = () => {
                                 <div className="relative">
                                     <Mail className="pointer-events-none absolute left-4 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-400" />
                                     <input
-                                        className="w-full rounded-xl border border-white/15 bg-white/10 py-3.5 pl-11 pr-4 text-white placeholder-gray-500 outline-none transition-all duration-300 focus:border-emerald-400/50 focus:bg-white/15 focus:ring-2 focus:ring-emerald-500/30"
+                                        className="w-full rounded-xl border border-white/15 bg-white/10 py-3.5 pl-11 pr-4 text-white placeholder-gray-500 outline-none transition-all duration-300 focus:border-indigo-400/50 focus:bg-white/15 focus:ring-2 focus:ring-indigo-500/30"
                                         placeholder="you@example.com"
                                         type="email"
                                         value={email}
@@ -131,7 +131,7 @@ const Register = () => {
                                 <div className="relative">
                                     <Lock className="pointer-events-none absolute left-4 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-400" />
                                     <input
-                                        className="w-full rounded-xl border border-white/15 bg-white/10 py-3.5 pl-11 pr-12 text-white placeholder-gray-500 outline-none transition-all duration-300 focus:border-emerald-400/50 focus:bg-white/15 focus:ring-2 focus:ring-emerald-500/30"
+                                        className="w-full rounded-xl border border-white/15 bg-white/10 py-3.5 pl-11 pr-12 text-white placeholder-gray-500 outline-none transition-all duration-300 focus:border-indigo-400/50 focus:bg-white/15 focus:ring-2 focus:ring-indigo-500/30"
                                         type={showPassword ? "text" : "password"}
                                         placeholder="Create a password"
                                         value={password}
@@ -153,7 +153,7 @@ const Register = () => {
                                 <div className="relative">
                                     <Lock className="pointer-events-none absolute left-4 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-400" />
                                     <input
-                                        className="w-full rounded-xl border border-white/15 bg-white/10 py-3.5 pl-11 pr-12 text-white placeholder-gray-500 outline-none transition-all duration-300 focus:border-emerald-400/50 focus:bg-white/15 focus:ring-2 focus:ring-emerald-500/30"
+                                        className="w-full rounded-xl border border-white/15 bg-white/10 py-3.5 pl-11 pr-12 text-white placeholder-gray-500 outline-none transition-all duration-300 focus:border-indigo-400/50 focus:bg-white/15 focus:ring-2 focus:ring-indigo-500/30"
                                         type={showConfirm ? "text" : "password"}
                                         placeholder="Confirm your password"
                                         value={confirmPassword}
@@ -174,9 +174,9 @@ const Register = () => {
                                 <button
                                     type="submit"
                                     disabled={loading || success}
-                                    className="group relative mt-2 w-full overflow-hidden rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 py-3.5 font-semibold text-white shadow-lg shadow-emerald-900/40 transition-all duration-300 hover:shadow-emerald-700/50 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+                                    className="group relative mt-2 w-full overflow-hidden rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 py-3.5 font-semibold text-white shadow-lg shadow-indigo-900/40 transition-all duration-300 hover:shadow-indigo-700/50 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
                                 >
-                                    <span className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                                    <span className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-violet-500 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                                     <span className="relative flex items-center justify-center gap-2">
                                         {loading ? (
                                             <Loader2 className="h-5 w-5 animate-spin" />
@@ -193,7 +193,7 @@ const Register = () => {
                             Already have an account?{" "}
                             <Link
                                 to="/login"
-                                className="font-semibold text-emerald-400 transition-colors hover:text-emerald-300"
+                                className="font-semibold text-indigo-400 transition-colors hover:text-indigo-300"
                             >
                                 Sign in
                             </Link>
@@ -203,7 +203,7 @@ const Register = () => {
             </div>
 
             {/* Right branding panel — hidden on mobile */}
-            <div className="relative hidden w-1/2 items-center justify-center overflow-hidden bg-gradient-to-br from-teal-900/30 to-emerald-900/20 lg:flex">
+            <div className="relative hidden w-1/2 items-center justify-center overflow-hidden bg-gradient-to-br from-violet-900/30 to-indigo-900/20 lg:flex">
                 <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -211,8 +211,8 @@ const Register = () => {
                     className="relative z-10 flex flex-col items-center gap-6 px-12 text-center"
                 >
                     <div className="flex items-center gap-3">
-                        <Star className="h-10 w-10 fill-teal-400 text-teal-400" />
-                        <h1 className="bg-gradient-to-r from-lime-200 via-emerald-300 to-teal-400 bg-clip-text text-6xl font-black tracking-tighter text-transparent">
+                        <Star className="h-10 w-10 fill-violet-400 text-violet-400" />
+                        <h1 className="bg-gradient-to-r from-lime-200 via-indigo-300 to-violet-400 bg-clip-text text-6xl font-black tracking-tighter text-transparent">
                             StarVault
                         </h1>
                     </div>
@@ -220,7 +220,7 @@ const Register = () => {
                         Rate movies, write reviews, and build your watchlist.
                     </p>
                     <div className="mt-4 flex items-center gap-2 rounded-full bg-white/10 px-5 py-2.5 text-sm text-gray-300 backdrop-blur-sm border border-white/10">
-                        <Sparkles className="h-4 w-4 text-teal-400" />
+                        <Sparkles className="h-4 w-4 text-violet-400" />
                         Join the community today
                     </div>
                 </motion.div>
