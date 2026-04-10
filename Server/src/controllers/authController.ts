@@ -62,6 +62,17 @@ export const login = async (req: Request, res: Response) => {
             expiresIn: "7d",
         });
 
+        // Record session for active sessions tracking
+        const device = req.headers['user-agent'] || 'Unknown Device';
+        const ip = (req.headers['x-forwarded-for'] as string)?.split(',')[0].trim() || req.socket.remoteAddress || '';
+
+        // Keep max 10 sessions; remove oldest if exceeded
+        if (user.sessions.length >= 10) {
+            user.sessions.shift();
+        }
+        user.sessions.push({ token, device, ip, lastActive: new Date() });
+        await user.save();
+
         res.json({ token });
     } catch (err) {
         res.status(500).json({ message: "Login failed", error: err });

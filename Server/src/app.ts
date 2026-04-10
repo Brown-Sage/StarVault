@@ -5,6 +5,7 @@ import searchRoutes from './routes/searchRoutes';
 import authRoutes from './routes/authRoutes';
 import reviewRoutes from './routes/reviewRoutes';
 import userMediaRoutes from './routes/userMediaRoutes';
+import userRoutes from './routes/userRoutes';
 import { protect } from "./middleware/authMiddleware";
 
 const app = express();
@@ -17,6 +18,7 @@ app.use(express.json());
 app.use('/api', mediaRoutes);
 app.use('/api', searchRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/user', userRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/user-media', userMediaRoutes);
 

@@ -7,6 +7,7 @@ interface AuthResponse {
 export interface MeResponse {
     _id: string;
     email: string;
+    avatarUrl?: string;
 }
 
 export const registerUser = async (email: string, password: string) => {

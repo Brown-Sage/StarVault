@@ -718,12 +718,16 @@ export default function MovieDetails() {
                             <div key={review._id} className="bg-gray-800 p-6 rounded-xl shadow-md border border-gray-700">
                                 <div className="flex items-center justify-between mb-4">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white font-bold text-lg">
-                                            {(review.user?.email?.[0] || 'U').toUpperCase()}
-                                        </div>
+                                        {review.user?.avatarUrl ? (
+                                            <img src={review.user.avatarUrl} alt="Avatar" className="w-10 h-10 rounded-full object-cover border border-white/10" />
+                                        ) : (
+                                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white font-bold text-lg">
+                                                {(review.user?.displayName?.[0] || review.user?.email?.[0] || 'U').toUpperCase()}
+                                            </div>
+                                        )}
                                         <div>
                                             <div className="font-bold text-white text-sm">
-                                                {review.user?.email?.split('@')[0] || 'Unknown User'}
+                                                {review.user?.displayName || review.user?.email?.split('@')[0] || 'Unknown User'}
                                             </div>
                                             <div className="text-gray-400 text-xs">
                                                 {new Date(review.createdAt).toLocaleDateString()}
@@ -742,8 +746,11 @@ export default function MovieDetails() {
                                     {review.replies?.map((reply: any) => (
                                         <div key={reply._id} className="bg-slate-950/50 p-3 rounded-lg border border-gray-700/50">
                                             <div className="flex items-center gap-2 mb-1">
+                                                {reply.user?.avatarUrl ? (
+                                                    <img src={reply.user.avatarUrl} alt="Avatar" className="w-5 h-5 rounded-full object-cover border border-white/10" />
+                                                ) : null}
                                                 <span className="font-bold text-indigo-400 text-xs">
-                                                    {reply.user?.email?.split('@')[0] || 'Unknown User'}
+                                                    {reply.user?.displayName || reply.user?.email?.split('@')[0] || 'Unknown User'}
                                                 </span>
                                                 <span className="text-gray-500 text-xs">
                                                     • {new Date(reply.createdAt).toLocaleDateString()}

@@ -11,6 +11,7 @@ import CastDetails from './components/CastDetails';
 import ChatBot from './components/ChatBot';
 
 import MyReviews from './pages/MyReviews';
+import Settings from './pages/Settings';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
           <Route path="/person/:id" element={<CastDetails />} />
           <Route path="/:type/:id" element={<MovieDetails />} />
           <Route path="/my-reviews" element={<MyReviews />} />
+          <Route path="/settings" element={<Settings />} />
         </Routes>
       </div>
     </Router>

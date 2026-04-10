@@ -3,7 +3,7 @@ import { useState, useRef, useEffect } from 'react';
 import type { FormEvent } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import md5 from 'md5';
-import { Star, Menu, X, LogOut, BookOpen } from 'lucide-react';
+import { Star, Menu, X, LogOut, BookOpen, Settings as SettingsIcon } from 'lucide-react';
 import { getMe } from './authApi';
 
 interface Tmdb_info {
@@ -58,7 +58,7 @@ export default function Navbar() {
                 setIsLoggedIn(true);
                 try {
                     const user = await getMe();
-                    setAvatarUrl(`https://www.gravatar.com/avatar/${md5(user.email.trim().toLowerCase())}?d=identicon`);
+                    setAvatarUrl(user.avatarUrl || `https://www.gravatar.com/avatar/${md5(user.email.trim().toLowerCase())}?d=identicon`);
                 } catch (err: unknown) {
                     // Only clear token on 401 (expired/invalid) — not on network blips or server errors
                     const status = (err as { response?: { status?: number } })?.response?.status;
@@ -77,9 +77,11 @@ export default function Navbar() {
 
         checkAuth();
         window.addEventListener("auth-change", checkAuth);
+        window.addEventListener("profile-change", checkAuth);
 
         return () => {
             window.removeEventListener("auth-change", checkAuth);
+            window.removeEventListener("profile-change", checkAuth);
         };
     }, []);
 
@@ -335,6 +337,13 @@ export default function Navbar() {
                                     >
                                         <BookOpen className="w-4 h-4" />
                                         My Reviews
+                                    </button>
+                                    <button
+                                        onClick={() => { navigate('/settings'); setUserMenuOpen(false); }}
+                                        className="flex items-center gap-3 w-full px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-white/8 transition-colors"
+                                    >
+                                        <SettingsIcon className="w-4 h-4" />
+                                        Settings
                                     </button>
                                     <div className="border-t border-white/8 mx-3"></div>
                                     <button

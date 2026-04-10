@@ -33,7 +33,7 @@ export const getMyReviews = async (req: Request, res: Response) => {
         const userId = req.user;
         const reviews = await Review.find({ user: userId })
             .sort({ createdAt: -1 })
-            .populate('user', 'email');
+            .populate('user', 'email avatarUrl displayName');
         return res.json(reviews);
     } catch (error) {
         return res.status(500).json({ message: 'Server error', error });
@@ -45,8 +45,8 @@ export const getReviews = async (req: Request, res: Response) => {
         const { mediaId } = req.params;
 
         const reviews = await Review.find({ mediaId })
-            .populate('user', 'email')
-            .populate('replies.user', 'email')
+            .populate('user', 'email avatarUrl displayName')
+            .populate('replies.user', 'email avatarUrl displayName')
             .sort({ createdAt: -1 });
 
         return res.json(reviews);
@@ -116,8 +116,8 @@ export const addReply = async (req: Request, res: Response) => {
         await review.save();
 
         const updatedReview = await Review.findById(reviewId)
-            .populate('user', 'email')
-            .populate('replies.user', 'email');
+            .populate('user', 'email avatarUrl displayName')
+            .populate('replies.user', 'email avatarUrl displayName');
 
         return res.json(updatedReview);
     } catch (error) {
