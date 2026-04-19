@@ -1,5 +1,32 @@
-import mongoose from 'mongoose';
+import mongoose, { Document } from 'mongoose';
 import bcrypt from 'bcrypt';
+
+export interface IUserPreferences {
+    favoriteArtists: string[];
+    favoriteMovieTypes: string[];
+    favoriteFormats: string[];
+    favoriteMoods: string[];
+}
+
+export interface IUser extends Document {
+    email: string;
+    password: string;
+    displayName: string;
+    bio: string;
+    avatarUrl: string;
+    accentColor: string;
+    onboardingCompleted: boolean;
+    preferences: IUserPreferences;
+    sessions: Array<{
+        _id: mongoose.Types.ObjectId;
+        token: string;
+        device: string;
+        ip: string;
+        lastActive: Date;
+    }>;
+    createdAt: Date;
+    updatedAt: Date;
+}
 
 const sessionSchema = new mongoose.Schema({
     token: { type: String, required: true },
@@ -8,7 +35,7 @@ const sessionSchema = new mongoose.Schema({
     lastActive: { type: Date, default: Date.now },
 }, { _id: true });
 
-const userSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema<IUser>({
     email: {
         type: String,
         required: true,
@@ -40,6 +67,16 @@ const userSchema = new mongoose.Schema({
         default: 'indigo',
         enum: ['indigo', 'violet', 'emerald', 'rose', 'amber'],
     },
+    onboardingCompleted: {
+        type: Boolean,
+        default: false,
+    },
+    preferences: {
+        favoriteArtists: { type: [String], default: [] },
+        favoriteMovieTypes: { type: [String], default: [] },
+        favoriteFormats: { type: [String], default: [] },
+        favoriteMoods: { type: [String], default: [] },
+    },
     sessions: {
         type: [sessionSchema],
         default: [],
@@ -57,6 +94,7 @@ userSchema.pre('save', async function () {
     }
 });
 
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model<IUser>('User', userSchema);
 
 export default User;
+

@@ -36,6 +36,8 @@ export const getProfile = async (req: Request, res: Response) => {
             bio: user.bio,
             avatarUrl: user.avatarUrl,
             accentColor: user.accentColor,
+            onboardingCompleted: user.onboardingCompleted,
+            preferences: user.preferences,
             memberSince,
         });
     } catch (err) {
@@ -151,3 +153,59 @@ export const logoutAllSessions = async (req: Request, res: Response) => {
         res.status(500).json({ message: "Failed to logout sessions", error: err });
     }
 };
+
+// ─── GET /api/user/preferences ───────────────────────────────────────────────
+
+export const getPreferences = async (req: Request, res: Response) => {
+    try {
+        const user = await getValidatedUser(req.user, res);
+        if (!user) return;
+
+        res.json({
+            onboardingCompleted: user.onboardingCompleted,
+            preferences: user.preferences ?? {
+                favoriteArtists: [],
+                favoriteMovieTypes: [],
+                favoriteFormats: [],
+                favoriteMoods: [],
+            },
+        });
+    } catch (err) {
+        res.status(500).json({ message: "Failed to fetch preferences", error: err });
+    }
+};
+
+// ─── POST /api/user/preferences ──────────────────────────────────────────────
+
+export const savePreferences = async (req: Request, res: Response) => {
+    try {
+        const user = await getValidatedUser(req.user, res);
+        if (!user) return;
+
+        const { favoriteArtists, favoriteMovieTypes, favoriteFormats, favoriteMoods } = req.body;
+
+        const updatedUser = await User.findByIdAndUpdate(
+            user._id,
+            {
+                $set: {
+                    onboardingCompleted: true,
+                    preferences: {
+                        favoriteArtists: Array.isArray(favoriteArtists) ? favoriteArtists.map(String) : [],
+                        favoriteMovieTypes: Array.isArray(favoriteMovieTypes) ? favoriteMovieTypes.map(String) : [],
+                        favoriteFormats: Array.isArray(favoriteFormats) ? favoriteFormats.map(String) : [],
+                        favoriteMoods: Array.isArray(favoriteMoods) ? favoriteMoods.map(String) : [],
+                    },
+                },
+            },
+            { new: true }
+        );
+
+        res.json({ message: "Preferences saved", preferences: updatedUser?.preferences });
+    } catch (err) {
+        console.error('savePreferences error:', err);
+        res.status(500).json({ message: "Failed to save preferences", error: err });
+    }
+};
+
+
+

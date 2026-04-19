@@ -1,4 +1,5 @@
 import axiosInstance from "../lib/axiosInstance";
+import { type OnboardingPreferences } from "../lib/preferences";
 
 export interface UserProfile {
     _id: string;
@@ -7,6 +8,8 @@ export interface UserProfile {
     bio: string;
     avatarUrl: string;
     accentColor: string;
+    onboardingCompleted: boolean;
+    preferences: OnboardingPreferences;
     memberSince: string | null;
 }
 
@@ -41,3 +44,19 @@ export const logoutAllSessions = async (): Promise<{ message: string }> => {
     const res = await axiosInstance.delete<{ message: string }>("/api/user/sessions");
     return res.data;
 };
+
+export interface PreferencesResponse {
+    onboardingCompleted: boolean;
+    preferences: OnboardingPreferences;
+}
+
+export const fetchPreferences = async (): Promise<PreferencesResponse> => {
+    const res = await axiosInstance.get<PreferencesResponse>("/api/user/preferences");
+    return res.data;
+};
+
+export const saveUserPreferences = async (preferences: OnboardingPreferences): Promise<PreferencesResponse> => {
+    const res = await axiosInstance.post<PreferencesResponse>("/api/user/preferences", preferences);
+    return res.data;
+};
+
