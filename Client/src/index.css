@@ -1,1 +1,30 @@
 @import "tailwindcss";
+
+/* ─── Settings accent theme ──────────────────────────────────────────────────
+   The --settings-accent variable is set inline on .settings-root by Settings.tsx.
+   All children automatically pick up the active accent color.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+.settings-root input:focus,
+.settings-root textarea:focus {
+    outline: none;
+    border-color: var(--settings-accent) !important;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--settings-accent) 22%, transparent) !important;
+}
+
+.settings-accent-btn {
+    background-color: var(--settings-accent) !important;
+    transition: filter 0.15s ease;
+}
+
+.settings-accent-btn:hover:not(:disabled) {
+    filter: brightness(1.15);
+}
+
+.settings-accent-icon-bg {
+    background-color: color-mix(in srgb, var(--settings-accent) 18%, transparent);
+}
+
+.settings-accent-icon-text {
+    color: var(--settings-accent);
+}

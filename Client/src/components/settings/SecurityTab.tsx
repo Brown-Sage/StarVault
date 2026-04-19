@@ -123,8 +123,8 @@ export default function SecurityTab() {
             {/* Change Password Card */}
             <div className="bg-slate-800/50 border border-slate-700/50 rounded-2xl p-6 md:p-8 backdrop-blur-sm shadow-xl">
                 <div className="flex items-center gap-3 mb-6">
-                    <div className="p-2 bg-indigo-500/20 rounded-lg">
-                        <Key className="w-5 h-5 text-indigo-400" />
+                    <div className="p-2 settings-accent-icon-bg rounded-lg">
+                        <Key className="w-5 h-5 settings-accent-icon-text" />
                     </div>
                     <h3 className="text-lg font-bold text-white">Change Password</h3>
                 </div>
@@ -148,7 +148,7 @@ export default function SecurityTab() {
                             required
                             value={currentPassword}
                             onChange={(e) => setCurrentPassword(e.target.value)}
-                            className="w-full bg-slate-900/50 border border-slate-700/50 text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                            className="w-full bg-slate-900/50 border border-slate-700/50 text-white rounded-xl px-4 py-3 focus:outline-none transition-all"
                         />
                     </div>
                     
@@ -159,7 +159,7 @@ export default function SecurityTab() {
                             required
                             value={newPassword}
                             onChange={(e) => setNewPassword(e.target.value)}
-                            className="w-full bg-slate-900/50 border border-slate-700/50 text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                            className="w-full bg-slate-900/50 border border-slate-700/50 text-white rounded-xl px-4 py-3 focus:outline-none transition-all"
                         />
                         {/* Strength Meter */}
                         {newPassword && (
@@ -178,14 +178,14 @@ export default function SecurityTab() {
                             required
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
-                            className="w-full bg-slate-900/50 border border-slate-700/50 text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                            className="w-full bg-slate-900/50 border border-slate-700/50 text-white rounded-xl px-4 py-3 focus:outline-none transition-all"
                         />
                     </div>
 
                     <button
                         type="submit"
                         disabled={savingPass || !currentPassword || !newPassword || !confirmPassword}
-                        className="bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2"
+                        className="settings-accent-btn disabled:opacity-50 disabled:cursor-not-allowed text-white px-5 py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2"
                     >
                         {savingPass && <Loader2 className="w-4 h-4 animate-spin" />}
                         Update Password

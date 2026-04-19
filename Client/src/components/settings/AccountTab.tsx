@@ -3,6 +3,7 @@ import type { UserProfile } from '../../api/userApi';
 import { updateProfile } from '../../api/userApi';
 import { Camera, Check, Loader2 } from 'lucide-react';
 import md5 from 'md5';
+import { getAccent } from '../../lib/accentTheme';
 
 interface AccountTabProps {
     profile: UserProfile;
@@ -70,6 +71,7 @@ export default function AccountTab({ profile, setProfile }: AccountTabProps) {
     };
 
     const displayAvatar = profile.avatarUrl || `https://www.gravatar.com/avatar/${md5(profile.email.trim().toLowerCase())}?d=identicon`;
+    const accent = getAccent(profile.accentColor);
     
     // Parse Date safely
     const joinedStr = profile.memberSince ? new Date(profile.memberSince).toLocaleDateString(undefined, {
@@ -94,7 +96,8 @@ export default function AccountTab({ profile, setProfile }: AccountTabProps) {
                         <img 
                             src={displayAvatar} 
                             alt="Profile Avatar" 
-                            className={`w-28 h-28 object-cover rounded-full border-4 border-slate-700 group-hover/avatar:border-${profile.accentColor || 'indigo'}-500 transition-colors bg-slate-900 shadow-xl`}
+                            style={{ borderColor: accent.solid }}
+                            className="w-28 h-28 object-cover rounded-full border-4 border-slate-700 transition-colors bg-slate-900 shadow-xl"
                         />
                         <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center rounded-full opacity-0 group-hover/avatar:opacity-100 transition-opacity">
                             <Camera className="w-8 h-8 text-white mb-1" />
@@ -120,7 +123,7 @@ export default function AccountTab({ profile, setProfile }: AccountTabProps) {
                                     placeholder="Paste image URL here..."
                                     value={editAvatar}
                                     onChange={e => setEditAvatar(e.target.value)}
-                                    className="flex-1 bg-slate-900 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-500"
+                                    className="flex-1 bg-slate-900 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none"
                                 />
                                 <button 
                                     onClick={handleAvatarSave}
@@ -146,7 +149,7 @@ export default function AccountTab({ profile, setProfile }: AccountTabProps) {
                                 onChange={e => setEditName(e.target.value)}
                                 onBlur={handleNameBlur}
                                 placeholder="Your display name"
-                                className="w-full bg-slate-900/50 border border-slate-700/50 text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all placeholder:text-slate-600"
+                                className="w-full bg-slate-900/50 border border-slate-700/50 text-white rounded-xl px-4 py-3 focus:outline-none transition-all placeholder:text-slate-600"
                             />
                         </div>
                         <div className="space-y-2">
@@ -168,7 +171,7 @@ export default function AccountTab({ profile, setProfile }: AccountTabProps) {
                             onBlur={handleBioBlur}
                             placeholder="Write a little bit about your favorite movies and shows..."
                             rows={3}
-                            className="w-full bg-slate-900/50 border border-slate-700/50 text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all placeholder:text-slate-600 resize-none"
+                            className="w-full bg-slate-900/50 border border-slate-700/50 text-white rounded-xl px-4 py-3 focus:outline-none transition-all placeholder:text-slate-600 resize-none"
                         />
                     </div>
                 </div>
@@ -184,11 +187,10 @@ export default function AccountTab({ profile, setProfile }: AccountTabProps) {
                             <button
                                 key={color.id}
                                 onClick={() => handleColorSelect(color.id)}
-                                className={`w-12 h-12 rounded-full ${color.hex} flex items-center justify-center transition-all shadow-lg ${
-                                    profile.accentColor === color.id 
-                                    ? 'ring-4 ring-offset-2 ring-offset-slate-800 ring-white scale-110' 
-                                    : 'hover:scale-110 hover:ring-2 hover:ring-offset-2 hover:ring-offset-slate-800 hover:ring-white/50'
-                                }`}
+                                style={profile.accentColor === color.id
+                                    ? { outline: `3px solid white`, outlineOffset: '3px' }
+                                    : {}}
+                                className={`w-12 h-12 rounded-full ${color.hex} flex items-center justify-center transition-all shadow-lg hover:scale-110`}
                                 title={color.name}
                             >
                                 {profile.accentColor === color.id && <Check className="w-6 h-6 text-white" />}

@@ -4,6 +4,7 @@ import { fetchProfile } from "../api/userApi";
 import AccountTab from "../components/settings/AccountTab";
 import SecurityTab from "../components/settings/SecurityTab";
 import { User, Shield, Loader2 } from "lucide-react";
+import { getAccent } from "../lib/accentTheme";
 
 export default function Settings() {
     const [activeTab, setActiveTab] = useState<"account" | "security">("account");
@@ -29,7 +30,7 @@ export default function Settings() {
     if (loading) {
         return (
             <div className="min-h-screen pt-32 pb-20 flex flex-col items-center justify-center">
-                <Loader2 className="w-10 h-10 animate-spin text-indigo-500 mb-4" />
+                <Loader2 className="w-10 h-10 animate-spin mb-4" style={{ color: '#6366f1' }} />
                 <p className="text-slate-400 font-medium">Loading your settings...</p>
             </div>
         );
@@ -45,8 +46,20 @@ export default function Settings() {
         );
     }
 
+    const accent = getAccent(profile.accentColor);
+
+    const activeTabStyle = {
+        backgroundColor: accent.bg,
+        color: accent.text,
+        borderColor: accent.border,
+        boxShadow: accent.shadow,
+    };
+
     return (
-        <div className="min-h-screen pt-28 pb-20 px-4 sm:px-8 xl:px-0 max-w-6xl mx-auto flex flex-col md:flex-row gap-8 lg:gap-12 relative z-10">
+        <div
+            className="settings-root min-h-screen pt-28 pb-20 px-4 sm:px-8 xl:px-0 max-w-6xl mx-auto flex flex-col md:flex-row gap-8 lg:gap-12 relative z-10"
+            style={{ '--settings-accent': accent.solid } as React.CSSProperties}
+        >
             {/* Sidebar */}
             <aside className="w-full md:w-64 lg:w-72 flex-shrink-0">
                 <div className="sticky top-28 space-y-8">
@@ -58,9 +71,10 @@ export default function Settings() {
                     <nav className="space-y-1">
                         <button
                             onClick={() => setActiveTab("account")}
+                            style={activeTab === "account" ? activeTabStyle : {}}
                             className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-left font-medium text-sm border ${
                                 activeTab === "account"
-                                    ? `bg-${profile.accentColor}-500/10 text-${profile.accentColor}-400 border-${profile.accentColor}-500/20 shadow-lg shadow-${profile.accentColor}-900/20`
+                                    ? "border-transparent"
                                     : "bg-transparent text-slate-400 border-transparent hover:bg-slate-800/50 hover:text-white"
                             }`}
                         >
@@ -69,9 +83,10 @@ export default function Settings() {
                         </button>
                         <button
                             onClick={() => setActiveTab("security")}
+                            style={activeTab === "security" ? activeTabStyle : {}}
                             className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-left font-medium text-sm border ${
                                 activeTab === "security"
-                                    ? `bg-${profile.accentColor}-500/10 text-${profile.accentColor}-400 border-${profile.accentColor}-500/20 shadow-lg shadow-${profile.accentColor}-900/20`
+                                    ? "border-transparent"
                                     : "bg-transparent text-slate-400 border-transparent hover:bg-slate-800/50 hover:text-white"
                             }`}
                         >
