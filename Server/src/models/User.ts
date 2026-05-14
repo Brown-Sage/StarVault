@@ -18,7 +18,7 @@ export interface IUser extends Document {
     onboardingCompleted: boolean;
     preferences: IUserPreferences;
     sessions: Array<{
-        _id: mongoose.Types.ObjectId;
+        _id?: mongoose.Types.ObjectId;
         token: string;
         device: string;
         ip: string;
